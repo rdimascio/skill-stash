@@ -162,9 +162,21 @@ importers:
       '@octokit/rest':
         specifier: ^20.0.2
         version: 20.1.2
+      '@skillstash/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@skillstash/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      drizzle-orm:
+        specifier: ^0.29.3
+        version: 0.29.5(@cloudflare/workers-types@4.20251011.0)
+      hono:
+        specifier: ^3.12.0
+        version: 3.12.12
+      zod:
+        specifier: ^3.22.4
+        version: 3.25.76
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20231218.0
