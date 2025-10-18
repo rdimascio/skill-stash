@@ -58,6 +58,15 @@ The web interface is the primary discovery layer. It should feel premium, load i
 - Filters
 - Sort by relevance
 
+### Import Plugin Page (`/import`) **NEW**
+- GitHub URL input field
+- Real-time validation
+- Import button with loading state
+- Success message with link to plugin
+- Error handling with helpful messages
+- Documentation link
+- Examples of valid URLs
+
 ## File Structure
 ```
 apps/web/
@@ -75,15 +84,18 @@ apps/web/
 │   │   ├── page.tsx            # Collections list
 │   │   └── [slug]/
 │   │       └── page.tsx        # Collection detail
-│   └── search/
-│       └── page.tsx            # Search results
+│   ├── search/
+│   │   └── page.tsx            # Search results
+│   └── import/
+│       └── page.tsx            # Import plugin (NEW)
 ├── components/
 │   ├── ui/                     # shadcn components
 │   ├── plugin-card.tsx         # Plugin card
 │   ├── search-bar.tsx          # Search input
 │   ├── copy-button.tsx         # Copy command button
 │   ├── category-grid.tsx       # Category grid
-│   └── install-command.tsx     # Install command display
+│   ├── install-command.tsx     # Install command display
+│   └── import-form.tsx         # Import plugin form (NEW)
 ├── lib/
 │   ├── api.ts                  # API client
 │   ├── utils.ts                # Utilities
@@ -545,8 +557,37 @@ export async function getCategories() {
   const response = await fetch(`${API_BASE}/api/categories`, {
     next: { revalidate: 3600 } // Cache for 1 hour
   });
-  
+
   return response.json();
+}
+
+// NEW: Import plugin from GitHub
+export async function importPlugin(repoUrl: string) {
+  // Parse GitHub URL
+  const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+  if (!match) {
+    throw new Error('Invalid GitHub URL');
+  }
+
+  const [, owner, repo] = match;
+  const cleanRepo = repo.replace(/\.git$/, ''); // Remove .git suffix if present
+
+  // Call indexer endpoint
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_INDEXER_URL}/index/${owner}/${cleanRepo}`,
+    {
+      method: 'POST',
+      cache: 'no-store' // Don't cache import requests
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || 'Import failed');
+  }
+
+  return data;
 }
 ```
 
@@ -604,16 +645,22 @@ export default config;
 ## Deliverables
 
 1. Complete Next.js app with all pages
-2. Responsive design (mobile, tablet, desktop)
-3. shadcn/ui components integrated
-4. Fast loading with RSC and caching
-5. SEO optimized (metadata, sitemap)
-6. Dark mode support
-7. Deployed to Vercel
+2. **Manual Plugin Import page** (NEW)
+3. Responsive design (mobile, tablet, desktop)
+4. shadcn/ui components integrated
+5. Fast loading with RSC and caching
+6. SEO optimized (metadata, sitemap)
+7. Dark mode support
+8. Deployed to Vercel
 
 ## Success Criteria
 
 - [ ] All pages render correctly
+- [ ] **Import page functional** (NEW)
+  - [ ] GitHub URL validation
+  - [ ] API integration with indexer
+  - [ ] Success/error handling
+  - [ ] Link to documentation
 - [ ] Fast page loads (< 1s LCP)
 - [ ] Mobile responsive
 - [ ] Search works
