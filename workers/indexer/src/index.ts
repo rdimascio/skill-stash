@@ -56,7 +56,8 @@ app.get('/index', async (c) => {
  */
 app.post('/index/:owner/:repo', async (c) => {
   try {
-    const { owner, repo } = c.param();
+    const owner = c.req.param('owner');
+    const repo = c.req.param('repo');
     const fullName = `${owner}/${repo}`;
 
     console.log(`Indexing specific repo: ${fullName}`);
@@ -272,12 +273,20 @@ async function runIndexing(env: Bindings): Promise<{
 }
 
 /**
+ * Worker export type
+ */
+interface WorkerExport {
+  fetch: typeof app.fetch;
+  scheduled: (event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) => Promise<void>;
+}
+
+/**
  * Scheduled cron handler
  */
-export default {
+const worker: WorkerExport = {
   fetch: app.fetch,
 
-  async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext): Promise<void> {
+  async scheduled(event: ScheduledEvent, env: Bindings, _ctx: ExecutionContext): Promise<void> {
     console.log('Starting scheduled indexing...');
     console.log('Cron:', event.cron);
 
@@ -290,3 +299,5 @@ export default {
     }
   },
 };
+
+export default worker;
