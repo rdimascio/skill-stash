@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@skillstash/db": "workspace:*",
+    "drizzle-orm": "^0.29.3",
     "hono": "^3.12.8",
-    "drizzle-orm": "^0.29.3"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240129.0",
