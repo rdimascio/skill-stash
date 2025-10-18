@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { sql, relations } from 'drizzle-orm';
 import { plugins } from './plugins';
 
 export const skills = sqliteTable('skills', {
@@ -16,3 +16,10 @@ export const skills = sqliteTable('skills', {
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 });
+
+export const skillsRelations = relations(skills, ({ one }) => ({
+  plugin: one(plugins, {
+    fields: [skills.pluginId],
+    references: [plugins.id]
+  })
+}));
