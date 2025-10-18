@@ -1,0 +1,9 @@
+# Cloudflare API Worker Development Environment Variables
+# Copy this file to .dev.vars and fill in your actual values
+
+# Environment
+ENVIRONMENT=development
+
+# Database and cache bindings are configured in wrangler.toml
+# DB binding: skillstash-registry
+# CACHE binding: skillstash-cache
