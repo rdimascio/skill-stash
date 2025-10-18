@@ -1,0 +1,56 @@
+{
+  "name": "skillstash",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The registry for Claude Code plugins",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:api": "turbo run dev --filter=api",
+    "dev:indexer": "turbo run dev --filter=indexer",
+    "dev:cli": "turbo run dev --filter=@skillstash/cli",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=web",
+    "build:cli": "turbo run build --filter=@skillstash/cli",
+    "build:workers": "turbo run build --filter='./workers/*'",
+    "test": "turbo run test",
+    "test:web": "turbo run test --filter=web",
+    "test:cli": "turbo run test --filter=@skillstash/cli",
+    "test:workers": "turbo run test --filter='./workers/*'",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "turbo run typecheck",
+    "deploy:web": "turbo run build --filter=web && cd apps/web && vercel --prod",
+    "deploy:api": "cd workers/api && wrangler deploy",
+    "deploy:indexer": "cd workers/indexer && wrangler deploy",
+    "deploy:workers": "pnpm deploy:api && pnpm deploy:indexer",
+    "publish:cli": "turbo run build --filter=@skillstash/cli && cd packages/cli && npm publish --access public",
+    "db:migrate": "cd workers/api && wrangler d1 migrations apply skillstash-registry",
+    "db:migrate:local": "cd workers/api && wrangler d1 migrations apply skillstash-registry --local",
+    "db:seed": "cd workers/api && wrangler d1 execute skillstash-registry --file=seed.sql",
+    "db:seed:local": "cd workers/api && wrangler d1 execute skillstash-registry --local --file=seed.sql",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "reset": "pnpm clean && pnpm install"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.1.0",
+    "turbo": "^1.11.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.12.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ]
+}
