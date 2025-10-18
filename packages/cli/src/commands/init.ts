@@ -6,7 +6,6 @@
 import chalk from 'chalk';
 import prompts from 'prompts';
 import fs from 'fs/promises';
-import path from 'path';
 
 export async function initCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n📦 Initialize new plugin\n'));

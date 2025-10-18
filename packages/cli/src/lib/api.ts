@@ -59,7 +59,7 @@ export async function searchPlugins(
     throw new Error(`Search failed: ${response.statusText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<SearchResponse>;
 }
 
 /**
@@ -75,7 +75,7 @@ export async function getPlugin(id: string): Promise<Plugin> {
     throw new Error(`Failed to fetch plugin: ${response.statusText}`);
   }
 
-  const result = await response.json();
+  const result = (await response.json()) as { data: Plugin };
   return result.data;
 }
 
@@ -96,7 +96,7 @@ export async function listPlugins(
     throw new Error(`Failed to list plugins: ${response.statusText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<ListResponse>;
 }
 
 /**
@@ -112,7 +112,7 @@ export async function getTrending(limit: number = 10): Promise<Plugin[]> {
     throw new Error(`Failed to get trending plugins: ${response.statusText}`);
   }
 
-  const result = await response.json();
+  const result = (await response.json()) as { data: Plugin[] };
   return result.data;
 }
 
@@ -129,9 +129,9 @@ export async function publishPlugin(metadata: any): Promise<{ success: boolean; 
   });
 
   if (!response.ok) {
-    const error = await response.json();
+    const error = (await response.json()) as { error?: string };
     throw new Error(error.error || 'Failed to publish plugin');
   }
 
-  return response.json();
+  return response.json() as Promise<{ success: boolean; message: string }>;
 }
