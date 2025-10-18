@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@octokit/rest": "^20.0.2",
-    "@skillstash/shared": "workspace:*"
+    "@skillstash/db": "workspace:*",
+    "@skillstash/shared": "workspace:*",
+    "drizzle-orm": "^0.29.3",
+    "hono": "^3.12.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231218.0",
