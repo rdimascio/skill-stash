@@ -1,0 +1,22 @@
+{
+  "name": "@skillstash/api",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@skillstash/db": "workspace:*",
+    "hono": "^3.12.8",
+    "drizzle-orm": "^0.29.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240129.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.24.0"
+  }
+}

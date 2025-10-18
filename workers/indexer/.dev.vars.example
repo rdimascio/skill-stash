@@ -1,0 +1,12 @@
+# GitHub Personal Access Token
+# Required for indexer to access GitHub API
+# Create at: https://github.com/settings/tokens
+# Permissions needed: public_repo (read)
+GITHUB_TOKEN=your-github-token-here
+
+# Cloudflare D1 Database ID
+# Get this from: wrangler d1 list
+CLOUDFLARE_DATABASE_ID=your-database-id-here
+
+# Environment
+ENVIRONMENT=development

@@ -1,0 +1,10 @@
+# Cloudflare D1 Database ID
+# Get this from: wrangler d1 list
+# DO NOT COMMIT THE ACTUAL .dev.vars FILE
+CLOUDFLARE_DATABASE_ID=your-database-id-here
+
+# GitHub Token for API (optional)
+GITHUB_TOKEN=your-github-token-here
+
+# Environment
+ENVIRONMENT=development

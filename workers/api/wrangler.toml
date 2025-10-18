@@ -1,0 +1,14 @@
+name = "skillstash-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "skillstash-registry"
+# database_id is set via environment variable for security
+# Set CLOUDFLARE_DATABASE_ID in .dev.vars for local development
+# Set in Cloudflare dashboard for production
+
+[[r2_buckets]]
+binding = "CACHE"
+bucket_name = "skillstash-cache"
