@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { sql, relations } from 'drizzle-orm';
 
 export const plugins = sqliteTable('plugins', {
   id: text('id').primaryKey(),
@@ -43,3 +43,38 @@ export const pluginDependencies = sqliteTable('plugin_dependencies', {
     .references(() => plugins.id, { onDelete: 'cascade' }),
   versionConstraint: text('version_constraint')
 });
+
+// Relations
+export const pluginsRelations = relations(plugins, ({ many }) => ({
+  versions: many(pluginVersions),
+  pluginTags: many(pluginTags),
+  dependencies: many(pluginDependencies, { relationName: 'plugin' }),
+  dependents: many(pluginDependencies, { relationName: 'dependency' })
+}));
+
+export const pluginVersionsRelations = relations(pluginVersions, ({ one }) => ({
+  plugin: one(plugins, {
+    fields: [pluginVersions.pluginId],
+    references: [plugins.id]
+  })
+}));
+
+export const pluginTagsRelations = relations(pluginTags, ({ one }) => ({
+  plugin: one(plugins, {
+    fields: [pluginTags.pluginId],
+    references: [plugins.id]
+  })
+}));
+
+export const pluginDependenciesRelations = relations(pluginDependencies, ({ one }) => ({
+  plugin: one(plugins, {
+    fields: [pluginDependencies.pluginId],
+    references: [plugins.id],
+    relationName: 'plugin'
+  }),
+  dependency: one(plugins, {
+    fields: [pluginDependencies.dependencyId],
+    references: [plugins.id],
+    relationName: 'dependency'
+  })
+}));
