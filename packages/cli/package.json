@@ -1,0 +1,37 @@
+{
+  "name": "@skillstash/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for discovering and installing Claude Code plugins from SkillStash",
+  "keywords": ["claude", "plugins", "cli", "claude-code"],
+  "license": "MIT",
+  "author": "SkillStash",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rdimascio/skill-stash.git",
+    "directory": "packages/cli"
+  },
+  "bin": {
+    "skillstash": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@skillstash/shared": "workspace:*",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "ora": "^8.0.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.7.0",
+    "vitest": "^1.0.4"
+  }
+}

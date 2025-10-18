@@ -1,0 +1,27 @@
+name = "skillstash-indexer"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+# D1 Database binding (shared with API)
+[[d1_databases]]
+binding = "DB"
+database_name = "skillstash-registry"
+database_id = "" # To be filled after creating D1 database
+
+# R2 bucket binding (shared with API)
+[[r2_buckets]]
+binding = "CACHE"
+bucket_name = "skillstash-cache"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# Scheduled trigger (runs daily at 2 AM UTC)
+[triggers]
+crons = ["0 2 * * *"]
+
+# Development environment overrides
+[env.development]
+vars = { ENVIRONMENT = "development" }
