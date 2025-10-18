@@ -29,10 +29,6 @@
     "db:generate": "pnpm --filter @skillstash/db exec drizzle-kit generate:sqlite",
     "db:push": "pnpm --filter @skillstash/db exec drizzle-kit push:sqlite",
     "db:studio": "pnpm --filter @skillstash/db exec drizzle-kit studio",
-    "db:migrate": "cd workers/api && wrangler d1 migrations apply skillstash-registry",
-    "db:migrate:local": "cd workers/api && wrangler d1 migrations apply skillstash-registry --local",
-    "db:seed": "cd workers/api && wrangler d1 execute skillstash-registry --file=seed.sql",
-    "db:seed:local": "cd workers/api && wrangler d1 execute skillstash-registry --local --file=seed.sql",
     "clean": "turbo run clean && rm -rf node_modules .turbo",
     "reset": "pnpm clean && pnpm install"
   },
