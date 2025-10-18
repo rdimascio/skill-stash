@@ -38,6 +38,46 @@ export interface GitHubContent {
   html_url: string;
 }
 
+export interface MarketplaceJson {
+  name: string;
+  version: string;
+  description: string;
+  author: {
+    name: string;
+    email?: string;
+    url?: string;
+  };
+  repository: {
+    type: string;
+    url: string;
+  };
+  keywords?: string[];
+  skills?: Array<{
+    name: string;
+    description: string;
+    filePath: string;
+    config?: Record<string, any>;
+  }>;
+  agents?: Array<{
+    name: string;
+    description: string;
+    tools?: string[];
+    config?: Record<string, any>;
+  }>;
+  commands?: Array<{
+    name: string;
+    description: string;
+    handler: string;
+    options?: Record<string, any>;
+  }>;
+  mcpServers?: Array<{
+    name: string;
+    description: string;
+    transport: 'stdio' | 'http';
+    config: Record<string, any>;
+  }>;
+}
+
 export class GitHubClient {
   private readonly baseUrl = 'https://api.github.com';
   private readonly userAgent = 'SkillStash-Indexer/1.0';
@@ -167,35 +207,20 @@ export class GitHubClient {
   }
 
   /**
-   * Get .claude directory structure
+   * Get and parse marketplace.json file
    */
-  async getClaudeDirectory(repo: string, branch?: string): Promise<{
-    skills: GitHubContent[];
-    agents: GitHubContent[];
-    commands: GitHubContent[];
-    mcpServers: GitHubContent[];
-  } | null> {
+  async getMarketplaceJson(repo: string, branch?: string): Promise<MarketplaceJson | null> {
     try {
-      const claudeDir = await this.getDirectoryContents(repo, '.claude', branch);
+      const content = await this.getFileContent(repo, '.claude-plugin/marketplace.json', branch);
 
-      if (!claudeDir) {
+      if (!content) {
         return null;
       }
 
-      // Get subdirectories
-      const skillsDir = await this.getDirectoryContents(repo, '.claude/skills', branch) || [];
-      const agentsDir = await this.getDirectoryContents(repo, '.claude/agents', branch) || [];
-      const commandsDir = await this.getDirectoryContents(repo, '.claude/commands', branch) || [];
-      const mcpServersDir = await this.getDirectoryContents(repo, '.claude/mcp-servers', branch) || [];
-
-      return {
-        skills: skillsDir.filter(f => f.type === 'file' && f.name.endsWith('.md')),
-        agents: agentsDir.filter(f => f.type === 'file' && f.name.endsWith('.md')),
-        commands: commandsDir.filter(f => f.type === 'file' && f.name.endsWith('.md')),
-        mcpServers: mcpServersDir.filter(f => f.type === 'file' && (f.name.endsWith('.md') || f.name.endsWith('.json'))),
-      };
+      const parsed = JSON.parse(content) as MarketplaceJson;
+      return parsed;
     } catch (error) {
-      console.error(`Failed to get .claude directory from ${repo}:`, error);
+      console.error(`Failed to parse marketplace.json for ${repo}:`, error);
       return null;
     }
   }

@@ -10,7 +10,7 @@ import { GitHubClient, withRetry } from './lib/github';
 import { PluginParser } from './lib/parser';
 import { DatabaseUpdater } from './lib/updater';
 import { CacheManager } from './lib/cache';
-import { validatePlugin } from './lib/validation';
+import { validatePlugin, validateMarketplaceJson } from './lib/validation';
 
 type Bindings = {
   DB: D1Database;
@@ -70,6 +70,33 @@ app.post('/index/:owner/:repo', async (c) => {
     // Get repository info
     const repoInfo = await githubClient.getRepository(fullName);
 
+    // Get marketplace.json first for early validation
+    const marketplaceJson = await githubClient.getMarketplaceJson(fullName);
+
+    if (!marketplaceJson) {
+      return c.json(
+        {
+          success: false,
+          error: 'No marketplace.json found',
+          message: 'Repository must contain .claude-plugin/marketplace.json',
+        },
+        400
+      );
+    }
+
+    // Validate marketplace.json structure
+    const marketplaceValidation = validateMarketplaceJson(marketplaceJson);
+    if (!marketplaceValidation.success) {
+      return c.json(
+        {
+          success: false,
+          error: 'Invalid marketplace.json',
+          errors: marketplaceValidation.errors,
+        },
+        400
+      );
+    }
+
     // Parse plugin
     const parsed = await parser.parsePlugin(repoInfo, githubClient);
 
@@ -83,7 +110,7 @@ app.post('/index/:owner/:repo', async (c) => {
       );
     }
 
-    // Validate
+    // Validate parsed plugin data
     const validation = validatePlugin(parsed);
     if (!validation.success) {
       return c.json(
@@ -231,7 +258,24 @@ async function runIndexing(env: Bindings): Promise<{
         }
       }
 
-      // Parse plugin
+      // Get marketplace.json first for early validation
+      const marketplaceJson = await githubClient.getMarketplaceJson(repo.full_name);
+
+      if (!marketplaceJson) {
+        console.log(`Skipping ${repo.full_name} - no marketplace.json found`);
+        skipped++;
+        continue;
+      }
+
+      // Validate marketplace.json structure
+      const marketplaceValidation = validateMarketplaceJson(marketplaceJson);
+      if (!marketplaceValidation.success) {
+        console.error(`Invalid marketplace.json in ${repo.full_name}:`, marketplaceValidation.errors);
+        failed++;
+        continue;
+      }
+
+      // Parse plugin from validated marketplace.json
       const parsed = await parser.parsePlugin(repo, githubClient);
 
       if (!parsed) {
@@ -240,7 +284,7 @@ async function runIndexing(env: Bindings): Promise<{
         continue;
       }
 
-      // Validate
+      // Validate parsed plugin data
       const validation = validatePlugin(parsed);
       if (!validation.success) {
         console.error(`Validation failed for ${repo.full_name}:`, validation.errors);
