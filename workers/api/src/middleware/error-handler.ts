@@ -21,7 +21,7 @@ export class BadRequestError extends Error {
   }
 }
 
-export async function errorHandler(c: Context, next: () => Promise<void>) {
+export async function errorHandler(c: Context, next: () => Promise<void>): Promise<Response | void> {
   try {
     await next();
   } catch (err) {

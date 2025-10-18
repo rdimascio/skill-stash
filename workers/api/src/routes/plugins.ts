@@ -2,10 +2,8 @@ import { Hono } from 'hono';
 import { createDbClient } from '@skillstash/db';
 import { plugins, pluginVersions, skills, agents, commands } from '@skillstash/db';
 import { eq, like, or, desc, asc, and, sql, count } from 'drizzle-orm';
-import { NotFoundError, BadRequestError } from '../middleware/error-handler';
-import { validateQuery, searchSchema } from '../middleware/validation';
+import { NotFoundError } from '../middleware/error-handler';
 import { paginatedResponse, successResponse, calculatePagination } from '../lib/response';
-import type { Context } from 'hono';
 
 type Bindings = {
   DB: D1Database;
@@ -79,23 +77,20 @@ pluginsRouter.get('/trending', async (c) => {
 });
 
 // GET /api/plugins/search - Search plugins
-pluginsRouter.get('/search', validateQuery(searchSchema), async (c) => {
+pluginsRouter.get('/search', async (c) => {
   const db = createDbClient(c.env.DB);
-  const query = c.get('validatedQuery') as any;
 
   const {
     q,
-    tag,
-    tags: tagsArray,
     author,
     sort = 'stars',
     order = 'desc',
-    limit = 20,
-    offset = 0
-  } = query;
+    limit = '20',
+    offset = '0'
+  } = c.req.query();
 
-  const limitNum = Math.min(limit, 100);
-  const offsetNum = offset;
+  const limitNum = Math.min(parseInt(limit) || 20, 100);
+  const offsetNum = parseInt(offset) || 0;
 
   // Build where conditions
   const conditions: any[] = [];

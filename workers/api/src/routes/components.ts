@@ -180,20 +180,12 @@ componentsRouter.get('/commands/:id', async (c) => {
 
 // GET /api/mcp-servers - List all MCP servers
 componentsRouter.get('/mcp-servers', async (c) => {
-  const db = createDbClient(c.env.DB);
-  const { limit = 50, offset = 0 } = c.req.query();
-
-  const limitNum = Math.min(parseInt(limit as string) || 50, 100);
-  const offsetNum = parseInt(offset as string) || 0;
-
   // TODO: Implement when mcp-servers schema is available
   return successResponse(c, [], 200);
 });
 
 // GET /api/mcp-servers/:id - Get MCP server by ID
-componentsRouter.get('/mcp-servers/:id', async (c) => {
-  const mcpServerId = c.req.param('id');
-
+componentsRouter.get('/mcp-servers/:id', async () => {
   // TODO: Implement when mcp-servers schema is available
   throw new NotFoundError('MCP Server not found');
 });

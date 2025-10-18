@@ -8,25 +8,25 @@ export const pluginSchema = z.object({
   repoUrl: z.string().url(),
   author: z.string().min(1),
   tags: z.array(z.string()).optional(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.string(), z.unknown()).optional()
 });
 
 export const pluginUpdateSchema = z.object({
   name: z.string().min(3).max(50).optional(),
   description: z.string().min(10).max(500).optional(),
   tags: z.array(z.string()).optional(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.string(), z.unknown()).optional()
 });
 
 export const searchSchema = z.object({
   q: z.string().optional(),
   tag: z.string().optional(),
-  tags: z.array(z.string()).optional(),
+  tags: z.string().optional(), // Will be parsed as JSON array
   author: z.string().optional(),
-  sort: z.enum(['stars', 'downloads', 'created', 'updated']).optional(),
-  order: z.enum(['asc', 'desc']).optional(),
-  limit: z.coerce.number().int().min(1).max(100).optional(),
-  offset: z.coerce.number().int().min(0).optional()
+  sort: z.enum(['stars', 'downloads', 'created', 'updated'] as const).optional(),
+  order: z.enum(['asc', 'desc'] as const).optional(),
+  limit: z.string().optional().transform((val) => val ? parseInt(val, 10) : undefined),
+  offset: z.string().optional().transform((val) => val ? parseInt(val, 10) : undefined)
 });
 
 export function validateBody<T extends z.ZodTypeAny>(schema: T) {
