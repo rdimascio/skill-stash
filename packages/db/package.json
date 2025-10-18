@@ -8,7 +8,8 @@
   "scripts": {
     "generate": "drizzle-kit generate:sqlite",
     "push": "drizzle-kit push:sqlite",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "drizzle-orm": "^0.29.3"

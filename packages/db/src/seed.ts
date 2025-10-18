@@ -1,4 +1,4 @@
-import { createDbClient, type DbClient } from './client';
+import { type DbClient } from './client';
 import { plugins, authors, skills, agents, commands, mcpServers, pluginVersions, pluginTags } from './schema';
 
 /**
