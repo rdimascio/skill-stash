@@ -1,0 +1,28 @@
+name = "skillstash-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "skillstash-registry"
+database_id = "" # To be filled after creating D1 database
+
+# R2 bucket binding
+[[r2_buckets]]
+binding = "CACHE"
+bucket_name = "skillstash-cache"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# Development environment overrides
+[env.development]
+vars = { ENVIRONMENT = "development" }
+
+# Routes configuration (for production)
+routes = [
+  { pattern = "api.skillstash.com/*", zone_name = "skillstash.com" }
+]
