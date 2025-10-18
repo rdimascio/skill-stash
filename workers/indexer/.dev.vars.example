@@ -1,14 +1,12 @@
-# Cloudflare Indexer Worker Development Environment Variables
-# Copy this file to .dev.vars and fill in your actual values
+# GitHub Personal Access Token
+# Required for indexer to access GitHub API
+# Create at: https://github.com/settings/tokens
+# Permissions needed: public_repo (read)
+GITHUB_TOKEN=your-github-token-here
+
+# Cloudflare D1 Database ID
+# Get this from: wrangler d1 list
+CLOUDFLARE_DATABASE_ID=your-database-id-here
 
 # Environment
 ENVIRONMENT=development
-
-# GitHub Personal Access Token (for API access)
-# Create at: https://github.com/settings/tokens
-# Required scopes: public_repo, read:user
-GITHUB_TOKEN=your_github_token_here
-
-# Database and cache bindings are configured in wrangler.toml
-# DB binding: skillstash-registry
-# CACHE binding: skillstash-cache

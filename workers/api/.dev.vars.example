@@ -1,9 +1,10 @@
-# Cloudflare API Worker Development Environment Variables
-# Copy this file to .dev.vars and fill in your actual values
+# Cloudflare D1 Database ID
+# Get this from: wrangler d1 list
+# DO NOT COMMIT THE ACTUAL .dev.vars FILE
+CLOUDFLARE_DATABASE_ID=your-database-id-here
+
+# GitHub Token for API (optional)
+GITHUB_TOKEN=your-github-token-here
 
 # Environment
 ENVIRONMENT=development
-
-# Database and cache bindings are configured in wrangler.toml
-# DB binding: skillstash-registry
-# CACHE binding: skillstash-cache
