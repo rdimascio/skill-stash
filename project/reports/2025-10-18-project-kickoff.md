@@ -20,7 +20,7 @@
    - Tailwind CSS + shadcn/ui
    - Target: skillstash.com
 
-2. **CLI Tool** (`packages/cli/`)
+2. **CLI Tool** (`apps/cli/`)
    - npm package: @skillstash/cli
    - Commander.js framework
    - Terminal UI: chalk, ora, prompts
@@ -29,7 +29,7 @@
    - Cloudflare Workers (Hono framework)
    - D1 (SQLite database)
    - R2 (storage/caching)
-   - Two workers: API + Indexer
+   - Two workers: API + ingester
 
 ## Project Phases
 
@@ -40,7 +40,7 @@
 
 ### Phase 2: Applications (Day 8-14)
 **Focus**: User-facing tools
-- Backend: Indexer service + Registry API
+- Backend: ingester service + Registry API
 - CLI: Command-line tool
 - Frontend: Web application
 
@@ -54,7 +54,7 @@
 ## Critical Path
 
 ```
-DevOps Infrastructure → Database Schema → (Indexer + API) → (CLI + Frontend) → Launch
+DevOps Infrastructure → Database Schema → (ingester + API) → (CLI + Frontend) → Launch
 ```
 
 **Key Dependencies**:
@@ -84,7 +84,7 @@ DevOps Infrastructure → Database Schema → (Indexer + API) → (CLI + Fronten
 
 ### Task 001: Database Schema
 **Assigned to**: Backend Infrastructure Specialist
-**Priority**: CRITICAL (blocks indexer and API)
+**Priority**: CRITICAL (blocks ingester and API)
 **Timeline**: 1-2 days
 **Blocked by**: Task 006 (needs D1 database ID)
 
@@ -173,7 +173,7 @@ Blockers: [Any issues]
 3. **Project Manager**:
    - Monitor Task 006 progress
    - Coordinate D1 database ID handoff
-   - Prepare Task 002 (Indexer) and Task 003 (API) assignments
+   - Prepare Task 002 (ingester) and Task 003 (API) assignments
 
 ## Risk Register
 

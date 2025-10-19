@@ -21,10 +21,20 @@
       "outputs": ["coverage/**"]
     },
     "deploy": {
-      "dependsOn": ["build", "test", "lint"],
+      "dependsOn": ["^deploy"],
       "cache": false
     },
     "clean": {
+      "cache": false
+    },
+    "@skillstash/db#destroy": {
+      "cache": false,
+      "dependsOn": ["@skillstash/api#destroy", "ingester#destroy"]
+    },
+    "@skillstash/api#destroy": {
+      "cache": false
+    },
+    "ingester#destroy": {
       "cache": false
     }
   }

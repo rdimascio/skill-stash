@@ -213,7 +213,7 @@ Add to `apps/web/.env.local`:
 
 ```bash
 NEXT_PUBLIC_API_URL=https://api.skillstash.com
-NEXT_PUBLIC_INDEXER_URL=https://indexer.skillstash.com
+NEXT_PUBLIC_ingester_URL=https://ingester.skillstash.com
 ```
 
 ## Testing Checklist

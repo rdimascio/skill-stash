@@ -301,7 +301,7 @@ Ensure:
 ### Phase 1: Foundation (Day 1-7)
 **Focus**: Infrastructure and backend
 - DevOps: Monorepo, D1, R2, Vercel setup
-- Backend: Database schema, indexer, API
+- Backend: Database schema, ingester, API
 
 ### Phase 2: Applications (Day 8-14)  
 **Focus**: User-facing tools

@@ -19,7 +19,7 @@ SkillStash is **100% code-complete** and ready to launch! All 7 tasks have been 
 - **Total Tasks**: 7/7 (100% complete)
 - **Pull Requests**: 6/6 merged (100% success rate)
 - **Lines of Code**: ~8,000+ LOC
-- **Packages Created**: 7 (db, shared, cli, api, indexer, web, workers)
+- **Packages Created**: 7 (db, shared, cli, api, ingester, web, workers)
 - **Total Files**: 130+ files
 - **Commits**: 35+ conventional commits
 - **Build Status**: ✅ All passing
@@ -96,7 +96,7 @@ SkillStash is **100% code-complete** and ready to launch! All 7 tasks have been 
 
 ---
 
-### 4. Plugin Indexer (Task 002) ✅
+### 4. Plugin ingester (Task 002) ✅
 **PR #4** - Merged
 
 **Delivered**:
@@ -240,7 +240,7 @@ D1 Database (SQLite)
 R2 Cache (6hr TTL)
 ```
 
-### Indexer Flow
+### ingester Flow
 
 ```
 GitHub (search repos)
@@ -268,7 +268,7 @@ skill-stash/
 │   └── shared/                # Shared TypeScript types (10+ files)
 ├── workers/
 │   ├── api/                   # Registry API worker (20+ files)
-│   └── indexer/               # Plugin indexer worker (15+ files)
+│   └── ingester/               # Plugin ingester worker (15+ files)
 ├── project/
 │   ├── tasks/                 # Task specifications (7 files)
 │   └── reports/               # Progress reports (5+ files)
@@ -389,9 +389,9 @@ skill-stash/
 ### For Developers
 - **CLAUDE.md** - Complete development guide
 - **DEPLOYMENT.md** - Step-by-step deployment
-- **packages/cli/README.md** - CLI documentation
+- **apps/cli/README.md** - CLI documentation
 - **workers/api/README.md** - API documentation
-- **workers/indexer/README.md** - Indexer documentation
+- **workers/ingester/README.md** - ingester documentation
 
 ### For Users
 - **README.md** - Main project readme
@@ -441,7 +441,7 @@ Nothing! The project went exceptionally well. Every architectural decision paid 
 - Infrastructure
 - Database
 - API
-- Indexer
+- ingester
 - CLI
 - Web Frontend
 - Documentation
@@ -450,7 +450,7 @@ Nothing! The project went exceptionally well. Every architectural decision paid 
 - Create Cloudflare D1 database
 - Create Cloudflare R2 bucket
 - Deploy API worker
-- Deploy Indexer worker
+- Deploy ingester worker
 - Deploy web app
 - Publish CLI to npm
 

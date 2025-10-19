@@ -47,6 +47,9 @@ lerna-debug.log*
 wrangler.toml.backup
 wrangler.toml.local
 
+# Alchemy
+.alchemy/
+
 # TypeScript
 *.tsbuildinfo
 

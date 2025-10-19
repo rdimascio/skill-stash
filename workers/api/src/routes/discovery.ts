@@ -3,15 +3,14 @@ import { createDbClient } from '@skillstash/db';
 import { plugins } from '@skillstash/db';
 import { eq, desc, count, sql } from 'drizzle-orm';
 import { NotFoundError } from '../middleware/error-handler';
-import { successResponse, paginatedResponse, calculatePagination } from '../lib/response';
+import {
+  successResponse,
+  paginatedResponse,
+  calculatePagination,
+} from '../lib/response';
+import type { worker as Worker } from '../../alchemy.run';
 
-type Bindings = {
-  DB: D1Database;
-  CACHE: R2Bucket;
-  ENVIRONMENT?: string;
-};
-
-const discoveryRouter = new Hono<{ Bindings: Bindings }>();
+const discoveryRouter = new Hono<{ Bindings: typeof Worker.Env }>();
 
 // GET /api/tags - List all tags with counts
 discoveryRouter.get('/tags', async (c) => {
@@ -20,8 +19,8 @@ discoveryRouter.get('/tags', async (c) => {
   // Get all plugins with tags
   const allPlugins = await db.query.plugins.findMany({
     columns: {
-      tags: true
-    }
+      tags: true,
+    },
   });
 
   // Count tag occurrences
@@ -56,7 +55,7 @@ discoveryRouter.get('/tags/:tag/plugins', async (c) => {
 
   // SQLite doesn't have native JSON array search, so we need to do filtering in app
   const allPlugins = await db.query.plugins.findMany({
-    orderBy: [desc(plugins.stars)]
+    orderBy: [desc(plugins.stars)],
   });
 
   // Filter by tag
@@ -88,7 +87,7 @@ discoveryRouter.get('/authors', async (c) => {
       author: plugins.author,
       pluginCount: count(plugins.id),
       totalStars: sql<number>`SUM(${plugins.stars})`,
-      totalDownloads: sql<number>`SUM(${plugins.downloads})`
+      totalDownloads: sql<number>`SUM(${plugins.downloads})`,
     })
     .from(plugins)
     .groupBy(plugins.author)
@@ -108,7 +107,7 @@ discoveryRouter.get('/authors/:author', async (c) => {
       author: plugins.author,
       pluginCount: count(plugins.id),
       totalStars: sql<number>`SUM(${plugins.stars})`,
-      totalDownloads: sql<number>`SUM(${plugins.downloads})`
+      totalDownloads: sql<number>`SUM(${plugins.downloads})`,
     })
     .from(plugins)
     .where(eq(plugins.author, author))
@@ -147,7 +146,7 @@ discoveryRouter.get('/authors/:author/plugins', async (c) => {
     where: eq(plugins.author, author),
     limit: limitNum,
     offset: offsetNum,
-    orderBy: [desc(plugins.stars)]
+    orderBy: [desc(plugins.stars)],
   });
 
   return paginatedResponse(

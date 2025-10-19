@@ -33,18 +33,12 @@ All infrastructure for SkillStash is configured and ready for development. The B
   - Entry: `src/index.ts` (placeholder)
   - Config: `wrangler.toml` (ready for D1/R2 bindings)
 
-- **Indexer Worker**: `workers/indexer/`
+- **ingester Worker**: `workers/ingester/`
   - Cron: Daily at 2 AM UTC
   - Entry: `src/index.ts` (placeholder)
   - Config: `wrangler.toml` (ready for D1/R2 bindings)
 
 **Status**: ✅ Configured, awaiting database ID
-
-### 4. Shared Types Package
-- **Location**: `packages/shared/`
-- **Exports**: Plugin, Skill, Agent, Command, MCPServer, APIResponse, SearchResult
-- **Import Pattern**: `import type { Plugin } from '@skillstash/shared'`
-- **Status**: ✅ Base types defined, ready to extend
 
 ### 5. CI/CD Pipelines
 - **Test Workflow**: Runs on all PRs (lint, typecheck, test)
@@ -55,7 +49,7 @@ All infrastructure for SkillStash is configured and ready for development. The B
 
 ### 6. Environment Configuration
 - **API Worker**: `.dev.vars.example` created
-- **Indexer Worker**: `.dev.vars.example` with GITHUB_TOKEN placeholder
+- **ingester Worker**: `.dev.vars.example` with GITHUB_TOKEN placeholder
 - **Web App**: `.env.example` with API_URL placeholder
 - **Status**: ✅ Templates ready for user setup
 
@@ -73,7 +67,7 @@ wrangler d1 create skillstash-registry
 
 This will output a `database_id` that must be added to:
 1. `/Users/rdimascio/p/skill-stash/workers/api/wrangler.toml`
-2. `/Users/rdimascio/p/skill-stash/workers/indexer/wrangler.toml`
+2. `/Users/rdimascio/p/skill-stash/workers/ingester/wrangler.toml`
 
 **Current Status**: Placeholder empty strings in wrangler.toml files
 
@@ -175,7 +169,7 @@ pnpm db:seed
 ```bash
 pnpm dev              # All services
 pnpm dev:api          # API worker only
-pnpm dev:indexer      # Indexer worker only
+pnpm dev:ingester      # ingester worker only
 ```
 
 ### Building
@@ -293,7 +287,7 @@ Your task is complete when:
 ### Dependencies
 - **Frontend Agent**: Will use API endpoints you define
 - **CLI Agent**: Will call API endpoints you create
-- **Indexer Implementation**: Needs your database schema
+- **ingester Implementation**: Needs your database schema
 
 ### Communication
 After completing schema:

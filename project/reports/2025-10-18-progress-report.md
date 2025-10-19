@@ -9,7 +9,7 @@
 
 Major milestone achieved! All backend infrastructure and CLI tooling are complete and merged to main. The project is progressing ahead of schedule with 5 of 7 tasks completed.
 
-**Completed**: Backend (API, Database, Indexer) + CLI
+**Completed**: Backend (API, Database, ingester) + CLI
 **In Progress**: Web Frontend
 **Remaining**: Launch checklist
 
@@ -84,7 +84,7 @@ Major milestone achieved! All backend infrastructure and CLI tooling are complet
 
 ---
 
-### Task 002: Plugin Indexer Service ✅
+### Task 002: Plugin ingester Service ✅
 **Status**: Merged (PR #4)
 **Delivered**:
 - GitHub API crawler with authentication
@@ -142,7 +142,7 @@ Major milestone achieved! All backend infrastructure and CLI tooling are complet
 ### Task 005: Web Frontend (Updated)
 **Added**: Manual plugin import feature
 **New Route**: `/import` page
-**Backend**: Import endpoint already exists in indexer
+**Backend**: Import endpoint already exists in ingester
 **Frontend**: Needs UI implementation (~1 day)
 
 **Import Feature Includes**:
@@ -200,7 +200,7 @@ Major milestone achieved! All backend infrastructure and CLI tooling are complet
 - Infrastructure ✅
 - Database ✅
 - API ✅
-- Indexer ✅
+- ingester ✅
 - CLI ✅
 
 **Phase 2 (Days 8-14)**: Frontend 🔄 STARTING
@@ -221,7 +221,7 @@ Major milestone achieved! All backend infrastructure and CLI tooling are complet
 ```
 Database Layer:     Drizzle ORM + Cloudflare D1 ✅
 API Layer:          Hono + REST ✅
-Indexer Layer:      GitHub Crawler ✅
+ingester Layer:      GitHub Crawler ✅
 CLI Layer:          Commander.js + Beautiful UI ✅
 ```
 
@@ -264,7 +264,7 @@ Still within all free tier limits!
 ### Code Metrics
 - **Total Files**: 100+ files
 - **Lines of Code**: ~5,000 LOC
-- **Packages**: 7 (db, shared, cli, api, indexer, web, workers)
+- **Packages**: 7 (db, shared, cli, api, ingester, web, workers)
 - **Test Coverage**: TBD (add in Phase 3)
 
 ### Git Activity
@@ -331,7 +331,7 @@ Still within all free tier limits!
 - ✅ All type checks pass
 - ✅ Database schema complete and type-safe
 - ✅ API endpoints functional and documented
-- ✅ Indexer crawls and parses plugins correctly
+- ✅ ingester crawls and parses plugins correctly
 - ✅ CLI provides excellent developer experience
 - ✅ Git workflow compliance across all PRs
 - ✅ Conventional commits throughout

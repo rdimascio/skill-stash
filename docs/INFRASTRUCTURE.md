@@ -40,7 +40,7 @@ wrangler d1 create skillstash-registry
 
 **CRITICAL**: Update the `database_id` in both wrangler.toml files:
 - `/Users/rdimascio/p/skill-stash/workers/api/wrangler.toml`
-- `/Users/rdimascio/p/skill-stash/workers/indexer/wrangler.toml`
+- `/Users/rdimascio/p/skill-stash/workers/ingester/wrangler.toml`
 
 Replace the empty string with your actual database ID:
 ```toml
@@ -83,10 +83,10 @@ Edit `.dev.vars`:
 ENVIRONMENT=development
 ```
 
-#### Indexer Worker (`workers/indexer/.dev.vars`)
+#### ingester Worker (`workers/ingester/.dev.vars`)
 
 ```bash
-cp workers/indexer/.dev.vars.example workers/indexer/.dev.vars
+cp workers/ingester/.dev.vars.example workers/ingester/.dev.vars
 ```
 
 Edit `.dev.vars` and add your GitHub token:
@@ -118,8 +118,8 @@ pnpm dev:web
 # API worker only
 pnpm dev:api
 
-# Indexer worker only
-pnpm dev:indexer
+# ingester worker only
+pnpm dev:ingester
 
 # CLI tool only
 pnpm dev:cli
@@ -220,10 +220,10 @@ Or push to `main` branch - GitHub Actions will auto-deploy.
 pnpm deploy:api
 ```
 
-#### Deploy Indexer Worker
+#### Deploy ingester Worker
 
 ```bash
-pnpm deploy:indexer
+pnpm deploy:ingester
 ```
 
 #### Deploy Both Workers
@@ -261,9 +261,13 @@ Configure these secrets in your GitHub repository settings:
 - `VERCEL_PROJECT_ID` - Vercel project ID
 - `NEXT_PUBLIC_API_URL` - Production API URL
 
-#### For Worker Deployment
-- `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers and D1 permissions
-- `GH_TOKEN` - GitHub personal access token (for indexer)
+#### For Worker Deployment (Alchemy)
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers, D1, and R2 permissions
+- `CLOUDFLARE_EMAIL` - Cloudflare account email
+- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID (from dashboard or `wrangler whoami`)
+- `ALCHEMY_PASSWORD` - Encryption password for Alchemy state management
+- `ALCHEMY_STATE_TOKEN` - State management token for Alchemy
+- `GITHUB_TOKEN` - Automatically provided by GitHub Actions (for ingester and PR comments)
 
 #### For CLI Publishing
 - `NPM_TOKEN` - npm authentication token
@@ -320,8 +324,8 @@ Worker routes are configured in `wrangler.toml`:
 # API worker logs
 wrangler tail skillstash-api
 
-# Indexer worker logs
-wrangler tail skillstash-indexer
+# ingester worker logs
+wrangler tail skillstash-ingester
 ```
 
 ### View D1 Database

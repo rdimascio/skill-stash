@@ -24,7 +24,7 @@ skillstash remove <plugin>      # Remove plugin
 
 ### File Structure
 ```
-packages/cli/
+apps/cli/
 ├── src/
 │   ├── index.ts              # CLI entry point
 │   ├── commands/

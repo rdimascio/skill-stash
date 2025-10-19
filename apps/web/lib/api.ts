@@ -1,5 +1,7 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.skillstash.com';
-const INDEXER_BASE = process.env.NEXT_PUBLIC_INDEXER_URL || 'https://indexer.skillstash.com';
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || 'https://api.skillstash.com';
+const ingester_BASE =
+  process.env.NEXT_PUBLIC_ingester_URL || 'https://ingester.skillstash.com';
 
 export interface Plugin {
   id: string;
@@ -51,10 +53,13 @@ export interface SearchOptions {
 /**
  * Get a paginated list of plugins
  */
-export async function getPlugins(options: SearchOptions = {}): Promise<PaginatedResponse<Plugin>> {
+export async function getPlugins(
+  options: SearchOptions = {}
+): Promise<PaginatedResponse<Plugin>> {
   const params = new URLSearchParams();
 
-  if (options.page) params.set('offset', String((options.page - 1) * (options.limit || 20)));
+  if (options.page)
+    params.set('offset', String((options.page - 1) * (options.limit || 20)));
   if (options.limit) params.set('limit', String(options.limit));
   if (options.category) params.set('category', options.category);
   if (options.sort) {
@@ -72,7 +77,7 @@ export async function getPlugins(options: SearchOptions = {}): Promise<Paginated
   }
 
   const response = await fetch(`${API_BASE}/api/plugins?${params}`, {
-    next: { revalidate: 300 } // Cache for 5 minutes
+    next: { revalidate: 300 }, // Cache for 5 minutes
   });
 
   if (!response.ok) {
@@ -85,9 +90,11 @@ export async function getPlugins(options: SearchOptions = {}): Promise<Paginated
 /**
  * Get a single plugin by ID or slug
  */
-export async function getPlugin(idOrSlug: string): Promise<PluginDetail | null> {
+export async function getPlugin(
+  idOrSlug: string
+): Promise<PluginDetail | null> {
   const response = await fetch(`${API_BASE}/api/plugins/${idOrSlug}`, {
-    next: { revalidate: 60 }
+    next: { revalidate: 60 },
   });
 
   if (response.status === 404) {
@@ -104,18 +111,21 @@ export async function getPlugin(idOrSlug: string): Promise<PluginDetail | null> 
 /**
  * Search plugins by query
  */
-export async function searchPlugins(query: string, options: SearchOptions = {}): Promise<PaginatedResponse<Plugin>> {
+export async function searchPlugins(
+  query: string,
+  options: SearchOptions = {}
+): Promise<PaginatedResponse<Plugin>> {
   const params = new URLSearchParams();
   params.set('q', query);
 
-  if (options.page) params.set('offset', String((options.page - 1) * (options.limit || 20)));
+  if (options.page)
+    params.set('offset', String((options.page - 1) * (options.limit || 20)));
   if (options.limit) params.set('limit', String(options.limit));
   if (options.category) params.set('category', options.category);
 
-  const response = await fetch(
-    `${API_BASE}/api/plugins/search?${params}`,
-    { next: { revalidate: 60 } }
-  );
+  const response = await fetch(`${API_BASE}/api/plugins/search?${params}`, {
+    next: { revalidate: 60 },
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to search plugins: ${response.statusText}`);
@@ -133,7 +143,7 @@ export async function getFeaturedPlugins(limit: number = 6): Promise<Plugin[]> {
   params.set('sort', 'stars');
 
   const response = await fetch(`${API_BASE}/api/plugins?${params}`, {
-    next: { revalidate: 600 } // Cache for 10 minutes
+    next: { revalidate: 600 }, // Cache for 10 minutes
   });
 
   if (!response.ok) {
@@ -156,35 +166,38 @@ export async function getCategories(): Promise<string[]> {
     'Deployment',
     'Security',
     'Quality',
-    'Utilities'
+    'Utilities',
   ];
 }
 
 /**
  * Import a plugin from GitHub
  */
-export async function importPlugin(repoUrl: string): Promise<{ message: string; plugin_id?: string }> {
+export async function importPlugin(
+  repoUrl: string
+): Promise<{ message: string; plugin_id?: string }> {
   // Parse GitHub URL
   const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
   if (!match) {
-    throw new Error('Invalid GitHub URL. Please provide a valid GitHub repository URL.');
+    throw new Error(
+      'Invalid GitHub URL. Please provide a valid GitHub repository URL.'
+    );
   }
 
   const [, owner, repo] = match;
   const cleanRepo = repo.replace(/\.git$/, '');
 
-  const response = await fetch(
-    `${INDEXER_BASE}/index/${owner}/${cleanRepo}`,
-    {
-      method: 'POST',
-      cache: 'no-store'
-    }
-  );
+  const response = await fetch(`${ingester_BASE}/index/${owner}/${cleanRepo}`, {
+    method: 'POST',
+    cache: 'no-store',
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || data.error || 'Import failed. Please try again.');
+    throw new Error(
+      data.message || data.error || 'Import failed. Please try again.'
+    );
   }
 
   return data;
@@ -199,7 +212,7 @@ export async function getStats(): Promise<{
   total_stars: number;
 }> {
   const response = await fetch(`${API_BASE}/api/stats`, {
-    next: { revalidate: 600 }
+    next: { revalidate: 600 },
   });
 
   if (!response.ok) {
@@ -207,7 +220,7 @@ export async function getStats(): Promise<{
     return {
       total_plugins: 0,
       total_downloads: 0,
-      total_stars: 0
+      total_stars: 0,
     };
   }
 

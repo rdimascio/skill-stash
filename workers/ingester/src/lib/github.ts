@@ -80,7 +80,7 @@ export interface MarketplaceJson {
 
 export class GitHubClient {
   private readonly baseUrl = 'https://api.github.com';
-  private readonly userAgent = 'SkillStash-Indexer/1.0';
+  private readonly userAgent = 'SkillStash-ingester/1.0';
 
   constructor(private readonly token: string) {
     if (!token) {
@@ -91,7 +91,10 @@ export class GitHubClient {
   /**
    * Search for repositories with Claude Code topics
    */
-  async searchClaudeCodeRepos(page: number = 1, perPage: number = 100): Promise<GitHubRepo[]> {
+  async searchClaudeCodeRepos(
+    page: number = 1,
+    perPage: number = 100
+  ): Promise<GitHubRepo[]> {
     const query = 'topic:claude-code OR topic:claude-plugin';
     const url = `${this.baseUrl}/search/repositories?q=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}&sort=updated`;
 
@@ -107,7 +110,11 @@ export class GitHubClient {
   /**
    * Get file content from a repository
    */
-  async getFileContent(repo: string, path: string, branch?: string): Promise<string | null> {
+  async getFileContent(
+    repo: string,
+    path: string,
+    branch?: string
+  ): Promise<string | null> {
     const branchParam = branch ? `?ref=${branch}` : '';
     const url = `${this.baseUrl}/repos/${repo}/contents/${path}${branchParam}`;
 
@@ -121,11 +128,13 @@ export class GitHubClient {
       }
 
       if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `GitHub API error: ${response.status} ${response.statusText}`
+        );
       }
 
       // GitHub Content API returns base64 encoded content
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
 
       if (data.content) {
         // Decode base64 content
@@ -178,7 +187,11 @@ export class GitHubClient {
   /**
    * Get directory contents
    */
-  async getDirectoryContents(repo: string, path: string, branch?: string): Promise<GitHubContent[] | null> {
+  async getDirectoryContents(
+    repo: string,
+    path: string,
+    branch?: string
+  ): Promise<GitHubContent[] | null> {
     const branchParam = branch ? `?ref=${branch}` : '';
     const url = `${this.baseUrl}/repos/${repo}/contents/${path}${branchParam}`;
 
@@ -192,10 +205,12 @@ export class GitHubClient {
       }
 
       if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `GitHub API error: ${response.status} ${response.statusText}`
+        );
       }
 
-      const data = await response.json() as GitHubContent[];
+      const data = (await response.json()) as GitHubContent[];
       return Array.isArray(data) ? data : null;
     } catch (error) {
       if (error instanceof Error && error.message.includes('404')) {
@@ -209,9 +224,16 @@ export class GitHubClient {
   /**
    * Get and parse marketplace.json file
    */
-  async getMarketplaceJson(repo: string, branch?: string): Promise<MarketplaceJson | null> {
+  async getMarketplaceJson(
+    repo: string,
+    branch?: string
+  ): Promise<MarketplaceJson | null> {
     try {
-      const content = await this.getFileContent(repo, '.claude-plugin/marketplace.json', branch);
+      const content = await this.getFileContent(
+        repo,
+        '.claude-plugin/marketplace.json',
+        branch
+      );
 
       if (!content) {
         return null;
@@ -269,8 +291,8 @@ export class GitHubClient {
    */
   private getHeaders(): Record<string, string> {
     return {
-      'Authorization': `Bearer ${this.token}`,
-      'Accept': 'application/vnd.github.v3+json',
+      Authorization: `Bearer ${this.token}`,
+      Accept: 'application/vnd.github.v3+json',
       'User-Agent': this.userAgent,
     };
   }
@@ -293,14 +315,19 @@ export async function withRetry<T>(
       lastError = error instanceof Error ? error : new Error(String(error));
 
       // Don't retry on 404 or authentication errors
-      if (lastError.message.includes('404') || lastError.message.includes('401')) {
+      if (
+        lastError.message.includes('404') ||
+        lastError.message.includes('401')
+      ) {
         throw lastError;
       }
 
       if (attempt < maxRetries - 1) {
         const delay = initialDelay * Math.pow(2, attempt);
-        console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        console.log(
+          `Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }

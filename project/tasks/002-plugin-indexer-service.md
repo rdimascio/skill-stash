@@ -1,4 +1,4 @@
-# Task 002: Plugin Indexer Service
+# Task 002: Plugin ingester Service
 
 ## Objective
 Build a Cloudflare Worker that crawls Git repositories, parses `marketplace.json` files, and indexes plugins into the D1 database.
@@ -9,7 +9,7 @@ Claude Code plugins are distributed via Git repos with `.claude-plugin/marketpla
 ## Architecture
 
 ```
-GitHub Repo → Indexer Worker → Parse marketplace.json → Store in D1 → Update R2 Cache
+GitHub Repo → ingester Worker → Parse marketplace.json → Store in D1 → Update R2 Cache
 ```
 
 ## marketplace.json Format
@@ -38,12 +38,12 @@ GitHub Repo → Indexer Worker → Parse marketplace.json → Store in D1 → Up
 
 ### File Structure
 ```
-workers/indexer/
+workers/ingester/
 ├── src/
 │   ├── index.ts           # Worker entry point
 │   ├── crawler.ts         # GitHub API crawler
 │   ├── parser.ts          # marketplace.json parser
-│   ├── indexer.ts         # Database indexer
+│   ├── ingester.ts         # Database ingester
 │   └── types.ts           # Type definitions
 ├── wrangler.toml
 └── package.json
@@ -69,7 +69,7 @@ export async function fetchMarketplaceFile(
     headers: {
       'Authorization': `Bearer ${githubToken}`,
       'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'SkillStash-Indexer'
+      'User-Agent': 'SkillStash-ingester'
     }
   });
   
@@ -90,7 +90,7 @@ export async function getRepoMetadata(
   const response = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${githubToken}`,
-      'User-Agent': 'SkillStash-Indexer'
+      'User-Agent': 'SkillStash-ingester'
     }
   });
   
@@ -158,7 +158,7 @@ export function extractCategory(description: string, name: string): string {
 }
 ```
 
-#### 3. Indexer (`indexer.ts`)
+#### 3. ingester (`ingester.ts`)
 ```typescript
 import { D1Database } from '@cloudflare/workers-types';
 import { MarketplaceData } from './parser';
@@ -256,7 +256,7 @@ export default {
       return handleGitHubWebhook(request, env);
     }
     
-    return new Response('SkillStash Indexer', { status: 200 });
+    return new Response('SkillStash ingester', { status: 200 });
   },
   
   async scheduled(event: ScheduledEvent, env: Env): Promise<void> {
@@ -316,7 +316,7 @@ async function handleIndexRequest(
 
 ### Configuration (`wrangler.toml`)
 ```toml
-name = "skillstash-indexer"
+name = "skillstash-ingester"
 main = "src/index.ts"
 compatibility_date = "2024-10-18"
 
@@ -362,13 +362,13 @@ GitHub webhook handler for automatic re-indexing on push.
 
 **Webhook Setup:**
 1. Add webhook to GitHub repo
-2. Set payload URL to `https://indexer.skillstash.com/webhook`
+2. Set payload URL to `https://ingester.skillstash.com/webhook`
 3. Select "Push" events
 4. Verify signature using `WEBHOOK_SECRET`
 
 ## Deliverables
 
-1. `workers/indexer/src/` - Complete worker implementation
+1. `workers/ingester/src/` - Complete worker implementation
 2. `wrangler.toml` - Worker configuration
 3. `package.json` - Dependencies (zod, @cloudflare/workers-types)
 4. GitHub webhook integration

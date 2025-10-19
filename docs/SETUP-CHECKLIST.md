@@ -36,7 +36,7 @@ database_name = "skillstash-registry"
 database_id = "PASTE_YOUR_DATABASE_ID_HERE"
 ```
 
-**File 2**: `workers/indexer/wrangler.toml`
+**File 2**: `workers/ingester/wrangler.toml`
 ```toml
 [[d1_databases]]
 binding = "DB"
@@ -79,13 +79,13 @@ cp .dev.vars.example .dev.vars
 
 No changes needed for local development.
 
-### 3.3 Indexer Worker Environment
+### 3.3 ingester Worker Environment
 ```bash
-cd workers/indexer
+cd workers/ingester
 cp .dev.vars.example .dev.vars
 ```
 
-Edit `workers/indexer/.dev.vars` and add your GitHub token:
+Edit `workers/ingester/.dev.vars` and add your GitHub token:
 ```env
 ENVIRONMENT=development
 GITHUB_TOKEN=ghp_your_token_here
@@ -110,11 +110,15 @@ VERCEL_PROJECT_ID     → Found in: apps/web/.vercel/project.json
 NEXT_PUBLIC_API_URL   → https://api.skillstash.com (production)
 ```
 
-### 4.2 Cloudflare Deployment Secrets
+### 4.2 Cloudflare Deployment Secrets (Alchemy)
 ```
 CLOUDFLARE_API_TOKEN  → Create at dash.cloudflare.com/profile/api-tokens
                         Required permissions: Workers Scripts (Edit), D1 (Edit), Workers R2 (Edit)
-GH_TOKEN              → Same as indexer GITHUB_TOKEN above
+CLOUDFLARE_EMAIL      → Your Cloudflare account email
+CLOUDFLARE_ACCOUNT_ID → Find in Cloudflare dashboard or run: wrangler whoami
+ALCHEMY_PASSWORD      → Generate: openssl rand -base64 32
+ALCHEMY_STATE_TOKEN   → Generate: openssl rand -hex 32
+GITHUB_TOKEN          → Automatically provided by GitHub Actions (no setup needed)
 ```
 
 ### 4.3 npm Publishing Secret
@@ -162,8 +166,8 @@ pnpm dev:api
 # Terminal 2: Web App
 pnpm dev:web
 
-# Terminal 3: Indexer Worker (optional)
-pnpm dev:indexer
+# Terminal 3: ingester Worker (optional)
+pnpm dev:ingester
 ```
 
 ### 6.4 Verify Services
@@ -187,7 +191,7 @@ Only needed when deploying to production:
 pnpm dev              # Run all services
 pnpm dev:web          # Web app only
 pnpm dev:api          # API worker only
-pnpm dev:indexer      # Indexer worker only
+pnpm dev:ingester      # ingester worker only
 pnpm build            # Build all packages
 pnpm test             # Run all tests
 pnpm lint             # Lint all code
@@ -198,7 +202,7 @@ pnpm typecheck        # Type check all code
 ```bash
 pnpm deploy:web       # Deploy web to Vercel
 pnpm deploy:api       # Deploy API worker
-pnpm deploy:indexer   # Deploy indexer worker
+pnpm deploy:ingester   # Deploy ingester worker
 pnpm deploy:workers   # Deploy both workers
 ```
 

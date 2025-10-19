@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
+  "exports": {
+    "./alchemy": "./alchemy.run.ts"
+  },
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "alchemy dev --app @skillstash/api",
+    "deploy": "alchemy deploy --app @skillstash/api",
+    "destroy": "alchemy destroy --app @skillstash/api",
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
