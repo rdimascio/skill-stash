@@ -91,26 +91,30 @@ For automated deployments via GitHub Actions, configure these secrets in your re
 # Cloudflare Authentication
 CLOUDFLARE_API_TOKEN=your-cloudflare-api-token-here
 CLOUDFLARE_EMAIL=your-cloudflare-account-email-here
+CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id-here
 
 # Alchemy State Management
 ALCHEMY_PASSWORD=your-encryption-password-here
 ALCHEMY_STATE_TOKEN=your-state-management-token-here
 
 # GitHub Token (for indexer and PR comments)
-GH_TOKEN=your-github-personal-access-token-here
+GITHUB_TOKEN=your-github-personal-access-token-here
 ```
 
 **Important Notes**:
-- `ALCHEMY_PASSWORD`: Choose a strong password for encrypting Alchemy state
-- `ALCHEMY_STATE_TOKEN`: Generate a secure random token (e.g., `openssl rand -hex 32`)
-- `GH_TOKEN`: Create with `repo` and `pull_requests` permissions for PR preview comments
+- `CLOUDFLARE_API_TOKEN`: Create at https://dash.cloudflare.com/profile/api-tokens with Workers Scripts, D1, and R2 permissions
 - `CLOUDFLARE_EMAIL`: Use the email associated with your Cloudflare account
+- `CLOUDFLARE_ACCOUNT_ID`: Find in Cloudflare dashboard URL or run `wrangler whoami`
+- `ALCHEMY_PASSWORD`: Choose a strong password for encrypting Alchemy state (e.g., `openssl rand -base64 32`)
+- `ALCHEMY_STATE_TOKEN`: Generate a secure random token (e.g., `openssl rand -hex 32`)
+- `GITHUB_TOKEN`: GitHub automatically provides this secret - no need to create manually. Used for indexer and PR preview comments
 
 **PR Preview Deployments**:
 The CI/CD pipeline now supports automatic preview deployments for pull requests:
 - Opening/updating a PR → Creates preview environment with stage `pr-<number>`
 - Closing a PR → Automatically destroys the preview environment
 - Preview URLs are posted as comments on the PR automatically
+- Each preview gets isolated D1 database and R2 bucket instances
 
 ### Step 1.2: Authenticate with Cloudflare
 ```bash

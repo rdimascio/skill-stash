@@ -110,11 +110,15 @@ VERCEL_PROJECT_ID     → Found in: apps/web/.vercel/project.json
 NEXT_PUBLIC_API_URL   → https://api.skillstash.com (production)
 ```
 
-### 4.2 Cloudflare Deployment Secrets
+### 4.2 Cloudflare Deployment Secrets (Alchemy)
 ```
 CLOUDFLARE_API_TOKEN  → Create at dash.cloudflare.com/profile/api-tokens
                         Required permissions: Workers Scripts (Edit), D1 (Edit), Workers R2 (Edit)
-GH_TOKEN              → Same as indexer GITHUB_TOKEN above
+CLOUDFLARE_EMAIL      → Your Cloudflare account email
+CLOUDFLARE_ACCOUNT_ID → Find in Cloudflare dashboard or run: wrangler whoami
+ALCHEMY_PASSWORD      → Generate: openssl rand -base64 32
+ALCHEMY_STATE_TOKEN   → Generate: openssl rand -hex 32
+GITHUB_TOKEN          → Automatically provided by GitHub Actions (no setup needed)
 ```
 
 ### 4.3 npm Publishing Secret

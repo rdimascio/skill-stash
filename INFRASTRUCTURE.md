@@ -261,9 +261,13 @@ Configure these secrets in your GitHub repository settings:
 - `VERCEL_PROJECT_ID` - Vercel project ID
 - `NEXT_PUBLIC_API_URL` - Production API URL
 
-#### For Worker Deployment
-- `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers and D1 permissions
-- `GH_TOKEN` - GitHub personal access token (for indexer)
+#### For Worker Deployment (Alchemy)
+- `CLOUDFLARE_API_TOKEN` - Cloudflare API token with Workers, D1, and R2 permissions
+- `CLOUDFLARE_EMAIL` - Cloudflare account email
+- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID (from dashboard or `wrangler whoami`)
+- `ALCHEMY_PASSWORD` - Encryption password for Alchemy state management
+- `ALCHEMY_STATE_TOKEN` - State management token for Alchemy
+- `GITHUB_TOKEN` - Automatically provided by GitHub Actions (for indexer and PR comments)
 
 #### For CLI Publishing
 - `NPM_TOKEN` - npm authentication token
