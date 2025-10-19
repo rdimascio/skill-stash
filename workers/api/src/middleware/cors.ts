@@ -7,7 +7,7 @@ export const corsMiddleware = cors({
       return origin;
     }
     // Allow production domain
-    if (origin === 'https://skillstash.com' || origin === 'https://www.skillstash.com') {
+    if (origin === 'https://skillstack.dev' || origin === 'https://www.skillstack.dev') {
       return origin;
     }
     // Default allow for development
