@@ -18,6 +18,7 @@ const cache = await R2Bucket("skillstash-cache", {
 // Deploy API Worker
 const apiWorker = await Worker("skillstash-api", {
   entrypoint: "./workers/api/src/index.ts",
+  domains: ["api.skillstash.com"], // Custom domain for API
   bindings: {
     DB: database, // D1 Database binding
     CACHE: cache, // R2 Bucket binding
@@ -29,6 +30,7 @@ const apiWorker = await Worker("skillstash-api", {
 // Deploy Indexer Worker with scheduled cron
 const indexerWorker = await Worker("skillstash-indexer", {
   entrypoint: "./workers/indexer/src/index.ts",
+  domains: ["indexer.skillstash.com"], // Custom domain for Indexer (optional, for manual triggers)
   bindings: {
     DB: database, // D1 Database binding
     CACHE: cache, // R2 Bucket binding
@@ -40,7 +42,11 @@ const indexerWorker = await Worker("skillstash-indexer", {
   },
 });
 
-console.log(`✅ API Worker deployed: ${apiWorker.url}`);
-console.log(`✅ Indexer Worker deployed: ${indexerWorker.url}`);
+console.log(`✅ API Worker deployed:`);
+console.log(`   Custom domain: https://api.skillstash.com`);
+console.log(`   Workers.dev: ${apiWorker.url}`);
+console.log(`✅ Indexer Worker deployed:`);
+console.log(`   Custom domain: https://indexer.skillstash.com`);
+console.log(`   Workers.dev: ${indexerWorker.url}`);
 
 await app.finalize();
