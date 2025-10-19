@@ -170,7 +170,7 @@ Focus this domain on **premium, paid plugins** for enterprise. This is the monet
                     │
                     ↓
 ┌─────────────────────────────────────────┐
-│         Plugin Indexer Service          │
+│         Plugin ingester Service          │
 │  - Crawls Git repos for plugins          │
 │  - Parses marketplace.json files         │
 │  - Extracts skills/agents/commands       │

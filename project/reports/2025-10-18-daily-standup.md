@@ -95,7 +95,7 @@
     ↓
 [BLOCKED] Database Schema (Task 001)
     ↓
-[NOT STARTED] Indexer Service (Task 002)
+[NOT STARTED] ingester Service (Task 002)
     ↓
 [NOT STARTED] Registry API (Task 003)
     ↓
@@ -147,7 +147,7 @@
 - **Day 7 (Oct 24)**: Begin Phase 2 (Applications)
 
 ### Next Week (October 25-31)
-- **Day 8-10**: Indexer Service (Task 002)
+- **Day 8-10**: ingester Service (Task 002)
 - **Day 10-12**: Registry API (Task 003)
 - **Day 12-14**: CLI Tool (Task 004) & Web Frontend (Task 005)
 

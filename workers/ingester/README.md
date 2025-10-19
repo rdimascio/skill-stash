@@ -1,6 +1,6 @@
-# SkillStash Indexer Worker
+# SkillStash ingester Worker
 
-The Indexer Worker is a Cloudflare Worker that discovers and indexes Claude Code plugins from GitHub. It crawls repositories with specific topics, parses plugin metadata, and populates the SkillStash registry database.
+The ingester Worker is a Cloudflare Worker that discovers and indexes Claude Code plugins from GitHub. It crawls repositories with specific topics, parses plugin metadata, and populates the SkillStash registry database.
 
 ## Architecture
 
@@ -63,7 +63,7 @@ Index a specific GitHub repository.
 
 **Example:**
 ```bash
-curl -X POST https://indexer.skillstash.com/index/anthropics/claude-code
+curl -X POST https://ingester.skillstash.com/index/anthropics/claude-code
 ```
 
 **Response:**
@@ -76,7 +76,7 @@ curl -X POST https://indexer.skillstash.com/index/anthropics/claude-code
 ```
 
 ### GET `/stats`
-Get indexer statistics.
+Get ingester statistics.
 
 **Response:**
 ```json
@@ -114,7 +114,7 @@ Health check endpoint.
 ```json
 {
   "status": "ok",
-  "service": "skillstash-indexer",
+  "service": "skillstash-ingester",
   "environment": "production",
   "timestamp": "2024-01-15T12:00:00.000Z"
 }
@@ -133,7 +133,7 @@ crons = ["0 2 * * *"]
 
 ## Plugin Discovery Strategy
 
-The indexer finds plugins by:
+The ingester finds plugins by:
 
 1. **GitHub Topics**: Searches for repos with `claude-code` or `claude-plugin` topics
 2. **Repository Structure**: Looks for `.claude/` directory
@@ -244,7 +244,7 @@ pnpm deploy
 
 Or from root:
 ```bash
-pnpm deploy:indexer
+pnpm deploy:ingester
 ```
 
 ## Error Handling
@@ -313,7 +313,7 @@ GitHub API limits:
 - **Authenticated**: 5,000 requests/hour
 - **Search API**: 30 requests/minute
 
-The indexer is designed to stay well within these limits:
+The ingester is designed to stay well within these limits:
 - Caches responses for 6 hours
 - Uses retry logic with backoff
 - Monitors rate limit via `/rate-limit` endpoint
@@ -332,5 +332,5 @@ The indexer is designed to stay well within these limits:
 
 - [Database Schema](/packages/db/README.md)
 - [API Worker](/workers/api/README.md)
-- [CLI Tool](/packages/cli/README.md)
-- [Project Tasks](/project/tasks/002-plugin-indexer-service.md)
+- [CLI Tool](/apps/cli/README.md)
+- [Project Tasks](/project/tasks/002-plugin-ingester-service.md)

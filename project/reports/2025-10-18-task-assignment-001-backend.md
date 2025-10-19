@@ -159,13 +159,12 @@ After completing database schema, you MUST provide:
 - Migration instructions
 - Example queries
 
-### For Indexer Service Developer (Task 002)
+### For ingester Service Developer (Task 002)
 - Plugin insert/update queries
 - Relationship handling (skills, agents, commands)
 - Transaction patterns
 
 ### For All Developers
-- `@skillstash/shared` package with types
 - Database access patterns
 - Query examples
 
@@ -175,7 +174,7 @@ After completing database schema, you MUST provide:
 - Task 006 (Infrastructure Setup) - needs D1 database ID
 
 **Blocks**:
-- Task 002 (Indexer Service) - needs schema to insert data
+- Task 002 (ingester Service) - needs schema to insert data
 - Task 003 (Registry API) - needs schema for queries
 - Task 004 (CLI Tool) - needs types
 - Task 005 (Web Frontend) - needs types

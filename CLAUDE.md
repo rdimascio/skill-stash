@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 SkillStash is a discovery and distribution platform for Claude Code plugins — think "shadcn/ui for Claude Code". The project is a pnpm-based monorepo using Turborepo with three main components:
 
 1. **Web App** (`apps/web/`) - Next.js 15 frontend at skillstash.com
-2. **CLI Tool** (`packages/cli/`) - npm package `@skillstash/cli` for searching/installing plugins
+2. **CLI Tool** (`apps/cli/`) - npm package `@skillstash/cli` for searching/installing plugins
 3. **Backend Workers** (`workers/`) - Cloudflare Workers for registry API and GitHub indexing
 
 ## Architecture & Technology Stack
@@ -38,7 +38,7 @@ pnpm dev
 pnpm --filter web dev              # Web app only
 pnpm --filter @skillstash/cli dev  # CLI only
 pnpm --filter api dev              # API worker only
-pnpm --filter indexer dev          # Indexer worker only
+pnpm --filter ingester dev          # ingester worker only
 ```
 
 ### Building
@@ -130,16 +130,6 @@ pnpm --filter web add -D @types/node
 pnpm --filter './apps/*' add lodash
 ```
 
-### Cross-Package Dependencies
-Packages can reference each other using workspace protocol:
-```json
-{
-  "dependencies": {
-    "@skillstash/shared": "workspace:*"
-  }
-}
-```
-
 ### Filtering Commands
 Turborepo/pnpm filter patterns:
 - `--filter web` - Specific package by name
@@ -155,27 +145,22 @@ Database schema and migrations live in `workers/api/`:
 - `workers/api/schema.sql` - Main database schema
 - `workers/api/migrations/` - D1 migration files
 
-### Shared Types
-All TypeScript types shared between packages are in `packages/shared/src/types/`:
-- `Plugin`, `Skill`, `Agent`, `Command`, `MCPServer` interfaces
-- Import as: `import type { Plugin } from '@skillstash/shared'`
-
 ### Environment Variables
 Each component has its own environment file:
 - Web: `apps/web/.env.local`
 - API Worker: `workers/api/.dev.vars`
-- Indexer Worker: `workers/indexer/.dev.vars`
+- ingester Worker: `workers/ingester/.dev.vars`
 
 Key environment variables:
 - `NEXT_PUBLIC_API_URL` - API endpoint for web app
-- `GITHUB_TOKEN` - Personal access token for indexer
+- `GITHUB_TOKEN` - Personal access token for ingester
 - `ENVIRONMENT` - deployment environment (development/production)
 
 ### Cloudflare Resources
 Production infrastructure uses:
 - D1 Database: `skillstash-registry`
 - R2 Bucket: `skillstash-cache`
-- Workers: `skillstash-api`, `skillstash-indexer`
+- Workers: `skillstash-api`, `skillstash-ingester`
 
 ### Deployment Triggers (GitHub Actions)
 - Push to `main` → Deploy web + workers
@@ -206,7 +191,7 @@ When working on Cloudflare Workers:
 
 ### CLI Development
 When working on the CLI:
-- Test locally: `cd packages/cli && node dist/index.js`
+- Test locally: `cd apps/cli && node dist/index.js`
 - Use Commander.js for command structure
 - Beautiful terminal UI: chalk (colors), ora (spinners), prompts (input)
 - Commands: search, add, install, info, list, init, publish, validate
@@ -223,7 +208,7 @@ When working on the web app:
 
 Detailed task breakdowns are in `project/tasks/`:
 - `001-database-schema.md` - Database design
-- `002-plugin-indexer-service.md` - GitHub crawler
+- `002-plugin-ingester-service.md` - GitHub crawler
 - `003-registry-api.md` - API endpoints
 - `004-cli-tool.md` - CLI implementation
 - `005-web-frontend.md` - Web app features
@@ -245,6 +230,3 @@ Refer to these for comprehensive implementation details.
 - Install globally: `npm install -g wrangler`
 - Or use: `pnpm --filter api exec wrangler`
 
-### Type errors in monorepo
-- Build shared package first: `pnpm --filter @skillstash/shared build`
-- Then build dependent packages

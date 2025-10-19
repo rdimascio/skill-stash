@@ -7,7 +7,10 @@ export const corsMiddleware = cors({
       return origin;
     }
     // Allow production domain
-    if (origin === 'https://skillstack.dev' || origin === 'https://www.skillstack.dev') {
+    if (
+      origin === 'https://skillstash.dev' ||
+      origin === 'https://www.skillstash.dev'
+    ) {
       return origin;
     }
     // Default allow for development
@@ -17,7 +20,7 @@ export const corsMiddleware = cors({
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   exposeHeaders: ['Content-Length', 'X-Request-Id'],
-  maxAge: 86400
+  maxAge: 86400,
 });
 
 export function securityHeaders() {

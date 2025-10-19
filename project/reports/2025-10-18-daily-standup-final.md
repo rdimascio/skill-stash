@@ -41,7 +41,7 @@
 ---
 
 ### Backend Infrastructure Specialist ✅
-**Task**: Task 001 - Database Schema + Task 002 - Indexer + Task 003 - Registry API
+**Task**: Task 001 - Database Schema + Task 002 - ingester + Task 003 - Registry API
 **Status**: ✅ ALL COMPLETE
 
 #### Task 001: Database Schema ✅
@@ -72,7 +72,7 @@
 
 **Performance**: < 100ms response times
 
-#### Task 002: Indexer Service ✅
+#### Task 002: ingester Service ✅
 **PR #4**: Merged to main
 
 **Completed**:
@@ -87,7 +87,7 @@
 **Cost**: $0/month (confirmed within free tiers)
 
 **Git Activity**:
-- Branches: `feat/database-drizzle`, `feat/registry-api`, `feat/indexer-service`
+- Branches: `feat/database-drizzle`, `feat/registry-api`, `feat/ingester-service`
 - Total commits: 15+ conventional commits
 - PRs: #2, #3, #4 all merged
 - Builds: ✅ All passing
@@ -147,7 +147,7 @@
 1. ✅ **Task 006**: Infrastructure Setup
 2. ✅ **Task 001**: Database Schema (Drizzle ORM)
 3. ✅ **Task 003**: Registry API (25+ endpoints)
-4. ✅ **Task 002**: Plugin Indexer
+4. ✅ **Task 002**: Plugin ingester
 5. ✅ **Task 004**: CLI Tool
 
 ## Remaining Tasks (2/7)
@@ -163,7 +163,7 @@
 ✅ DevOps Infrastructure (Task 006) - COMPLETE
 ✅ Database Schema (Task 001) - COMPLETE
 ✅ Registry API (Task 003) - COMPLETE
-✅ Indexer Service (Task 002) - COMPLETE
+✅ ingester Service (Task 002) - COMPLETE
 ✅ CLI Tool (Task 004) - COMPLETE
 🔄 Web Frontend (Task 005) - IN PROGRESS
 ⏳ Launch Checklist (Task 007) - PENDING
@@ -196,7 +196,7 @@
 ### Code Metrics
 - Total files: 100+
 - Lines of code: ~5,000 LOC
-- Packages: 7 (db, shared, cli, api, indexer, web, workers)
+- Packages: 7 (db, shared, cli, api, ingester, web, workers)
 - Build status: ✅ All passing
 
 ### Performance
@@ -270,7 +270,7 @@ All major risks have been mitigated!
 ## Documentation Updates
 
 ### Created Today
-- ✅ `/docs/INDEXER-COSTS-ANALYSIS.md` - Complete cost breakdown
+- ✅ `/docs/ingester-COSTS-ANALYSIS.md` - Complete cost breakdown
 - ✅ `/docs/MANUAL-IMPORT-FEATURE.md` - Import feature design
 - ✅ `/project/reports/2025-10-18-progress-report.md` - Full progress report
 - ✅ Updated Task 005 with manual import feature
@@ -315,7 +315,7 @@ All major risks have been mitigated!
 - ✅ Infrastructure complete
 - ✅ Database with Drizzle ORM
 - ✅ Full REST API (25+ endpoints)
-- ✅ GitHub indexer with caching
+- ✅ GitHub ingester with caching
 - ✅ Beautiful CLI tool
 - ✅ All PRs merged
 - ✅ Zero technical debt

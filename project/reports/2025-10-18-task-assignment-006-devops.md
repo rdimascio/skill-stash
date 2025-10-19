@@ -81,7 +81,7 @@ When work is complete:
 ### 5. Environment Configuration
 - [ ] `apps/web/.env.local.example` - Web app environment template
 - [ ] `workers/api/.dev.vars.example` - API worker environment template
-- [ ] `workers/indexer/.dev.vars.example` - Indexer worker environment template
+- [ ] `workers/ingester/.dev.vars.example` - ingester worker environment template
 
 ### 6. Documentation
 - [ ] Root `README.md` - Project overview and setup instructions
@@ -111,7 +111,7 @@ After completing infrastructure setup, you MUST provide:
 
 **Blocks**:
 - Task 001 (Database Schema) - needs D1 database ID
-- Task 002 (Indexer Service) - needs infrastructure
+- Task 002 (ingester Service) - needs infrastructure
 - Task 003 (Registry API) - needs infrastructure
 - Task 004 (CLI Tool) - needs monorepo structure
 - Task 005 (Web Frontend) - needs monorepo structure

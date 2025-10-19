@@ -1,5 +1,5 @@
 /**
- * SkillStash Indexer Worker
+ * SkillStash ingester Worker
  * Discovers and indexes Claude Code plugins from GitHub
  */
 
@@ -146,7 +146,7 @@ app.post('/index/:owner/:repo', async (c) => {
 });
 
 /**
- * Get indexer statistics
+ * Get ingester statistics
  */
 app.get('/stats', async (c) => {
   try {
@@ -202,7 +202,7 @@ app.get('/rate-limit', async (c) => {
 app.get('/health', (c) => {
   return c.json({
     status: 'ok',
-    service: 'skillstash-indexer',
+    service: 'skillstash-ingester',
     environment: c.env.ENVIRONMENT || 'development',
     timestamp: new Date().toISOString(),
   });
@@ -230,7 +230,9 @@ async function runIndexing(env: Bindings): Promise<{
   // Search for Claude Code repositories
   console.log('Searching for Claude Code repositories...');
 
-  const repos = await withRetry(() => githubClient.searchClaudeCodeRepos(1, 100));
+  const repos = await withRetry(() =>
+    githubClient.searchClaudeCodeRepos(1, 100)
+  );
 
   console.log(`Found ${repos.length} repositories`);
 
@@ -251,7 +253,9 @@ async function runIndexing(env: Bindings): Promise<{
 
           // Skip if indexed less than 6 hours ago
           if (hoursSinceIndexed < 6) {
-            console.log(`Skipping ${repo.full_name} (indexed ${hoursSinceIndexed.toFixed(1)}h ago)`);
+            console.log(
+              `Skipping ${repo.full_name} (indexed ${hoursSinceIndexed.toFixed(1)}h ago)`
+            );
             skipped++;
             continue;
           }
@@ -259,7 +263,9 @@ async function runIndexing(env: Bindings): Promise<{
       }
 
       // Get marketplace.json first for early validation
-      const marketplaceJson = await githubClient.getMarketplaceJson(repo.full_name);
+      const marketplaceJson = await githubClient.getMarketplaceJson(
+        repo.full_name
+      );
 
       if (!marketplaceJson) {
         console.log(`Skipping ${repo.full_name} - no marketplace.json found`);
@@ -270,7 +276,10 @@ async function runIndexing(env: Bindings): Promise<{
       // Validate marketplace.json structure
       const marketplaceValidation = validateMarketplaceJson(marketplaceJson);
       if (!marketplaceValidation.success) {
-        console.error(`Invalid marketplace.json in ${repo.full_name}:`, marketplaceValidation.errors);
+        console.error(
+          `Invalid marketplace.json in ${repo.full_name}:`,
+          marketplaceValidation.errors
+        );
         failed++;
         continue;
       }
@@ -287,7 +296,10 @@ async function runIndexing(env: Bindings): Promise<{
       // Validate parsed plugin data
       const validation = validatePlugin(parsed);
       if (!validation.success) {
-        console.error(`Validation failed for ${repo.full_name}:`, validation.errors);
+        console.error(
+          `Validation failed for ${repo.full_name}:`,
+          validation.errors
+        );
         failed++;
         continue;
       }
@@ -306,7 +318,9 @@ async function runIndexing(env: Bindings): Promise<{
     }
   }
 
-  console.log(`Indexing complete: ${indexed} indexed, ${failed} failed, ${skipped} skipped`);
+  console.log(
+    `Indexing complete: ${indexed} indexed, ${failed} failed, ${skipped} skipped`
+  );
 
   return {
     indexed,
@@ -321,7 +335,11 @@ async function runIndexing(env: Bindings): Promise<{
  */
 interface WorkerExport {
   fetch: typeof app.fetch;
-  scheduled: (event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) => Promise<void>;
+  scheduled: (
+    event: ScheduledEvent,
+    env: Bindings,
+    ctx: ExecutionContext
+  ) => Promise<void>;
 }
 
 /**
@@ -330,7 +348,11 @@ interface WorkerExport {
 const worker: WorkerExport = {
   fetch: app.fetch,
 
-  async scheduled(event: ScheduledEvent, env: Bindings, _ctx: ExecutionContext): Promise<void> {
+  async scheduled(
+    event: ScheduledEvent,
+    env: Bindings,
+    _ctx: ExecutionContext
+  ): Promise<void> {
     console.log('Starting scheduled indexing...');
     console.log('Cron:', event.cron);
 

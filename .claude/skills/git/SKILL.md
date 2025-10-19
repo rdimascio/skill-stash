@@ -41,7 +41,7 @@ Use this format for ALL commits:
 
 **Scopes (examples):**
 - `api` - API worker
-- `indexer` - Indexer worker
+- `ingester` - ingester worker
 - `cli` - CLI tool
 - `web` - Web frontend
 - `db` - Database

@@ -1,10 +1,10 @@
-# Indexer Cost & Performance Analysis
+# ingester Cost & Performance Analysis
 
-## What the Indexer Actually Does
+## What the ingester Actually Does
 
 **NOT scanning all of GitHub!** 🎉
 
-The indexer uses a **targeted search query**:
+The ingester uses a **targeted search query**:
 ```
 topic:claude-code OR topic:claude-plugin
 ```
@@ -39,7 +39,7 @@ This only finds repositories that have explicitly added these topics to their Gi
 
 ### Cloudflare Costs
 
-#### Workers (Indexer)
+#### Workers (ingester)
 - **Free Tier**: 100,000 requests/day
 - **Usage**: 1 scheduled run/day = 30 requests/month
 - **Cost: $0**
@@ -265,7 +265,7 @@ Log after each run:
 **Performance**: Excellent (< 1 minute per run with caching)
 **Risk**: Very low
 
-The indexer is:
+The ingester is:
 - ✅ **Not scanning all of GitHub** (only repos with specific topics)
 - ✅ **Free to run** (within all free tier limits)
 - ✅ **Fast** (< 1 minute with caching)

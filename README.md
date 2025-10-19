@@ -7,7 +7,7 @@
 
 Discover, install, and share plugins for Claude Code with a single command. Think shadcn/ui for Claude Code.
 
-🌐 **[skillstack.dev](https://skillstack.dev)** | 📦 **[npm](https://www.npmjs.com/package/@skillstash/cli)** | 📚 **[Documentation](https://docs.skillstack.dev)**
+🌐 **[skillstash.dev](https://skillstash.dev)** | 📦 **[npm](https://www.npmjs.com/package/@skillstash/cli)** | 📚 **[Documentation](https://docs.skillstash.dev)**
 
 ---
 
@@ -16,7 +16,7 @@ Discover, install, and share plugins for Claude Code with a single command. Thin
 - 🔍 **Discover** - Browse 150+ plugins for testing, DevOps, security, and more
 - ⚡ **Install** - Add plugins to Claude Code in seconds
 - 🎨 **Beautiful CLI** - Intuitive commands with gorgeous terminal UI
-- 🌐 **Web Registry** - Visual discovery at skillstack.dev
+- 🌐 **Web Registry** - Visual discovery at skillstash.dev
 - 📦 **Easy Publishing** - Share your plugins with the community
 - 🔒 **Secure** - Verified publishers and security audits
 
@@ -42,7 +42,7 @@ skillstash add pr-reviewer
 
 ### Browse online
 
-Visit [skillstack.dev](https://skillstack.dev) to explore plugins visually.
+Visit [skillstash.dev](https://skillstash.dev) to explore plugins visually.
 
 ## 📚 Usage
 
@@ -120,7 +120,7 @@ my-plugin/
 - **deploy-assistant** - Streamline deployments across platforms
 - **security-scanner** - Scan for vulnerabilities and security issues
 
-[Browse all plugins →](https://skillstack.dev/plugins)
+[Browse all plugins →](https://skillstash.dev/plugins)
 
 ## 💡 Examples
 
@@ -215,19 +215,19 @@ pnpm dev
 ```
 skillstash/
 ├── apps/web/              # Next.js web app
-├── packages/cli/          # CLI tool
+├── apps/cli/          # CLI tool
 ├── workers/api/           # Registry API
-└── workers/indexer/       # Plugin indexer
+└── workers/ingester/       # Plugin ingester
 ```
 
 See [CLAUDE.md](./CLAUDE.md) for detailed development documentation.
 
 ## 📖 Documentation
 
-- **Getting Started**: [docs.skillstack.dev/getting-started](https://docs.skillstack.dev/getting-started)
-- **Plugin Development**: [docs.skillstack.dev/plugin-development](https://docs.skillstack.dev/plugin-development)
-- **API Reference**: [docs.skillstack.dev/api](https://docs.skillstack.dev/api)
-- **CLI Reference**: [docs.skillstack.dev/cli](https://docs.skillstack.dev/cli)
+- **Getting Started**: [docs.skillstash.dev/getting-started](https://docs.skillstash.dev/getting-started)
+- **Plugin Development**: [docs.skillstash.dev/plugin-development](https://docs.skillstash.dev/plugin-development)
+- **API Reference**: [docs.skillstash.dev/api](https://docs.skillstash.dev/api)
+- **CLI Reference**: [docs.skillstash.dev/cli](https://docs.skillstash.dev/cli)
 
 ## 🙏 Acknowledgments
 
@@ -247,9 +247,9 @@ MIT © SkillStash
 
 ## 🔗 Links
 
-- **Website**: [skillstack.dev](https://skillstack.dev)
+- **Website**: [skillstash.dev](https://skillstash.dev)
 - **CLI Package**: [@skillstash/cli](https://www.npmjs.com/package/@skillstash/cli)
-- **Documentation**: [docs.skillstack.dev](https://docs.skillstack.dev)
+- **Documentation**: [docs.skillstash.dev](https://docs.skillstash.dev)
 - **GitHub**: [github.com/yourusername/skillstash](https://github.com/yourusername/skillstash)
 - **Twitter**: [@skillstash](https://twitter.com/skillstash)
 - **Discord**: [discord.gg/skillstash](https://discord.gg/skillstash)
@@ -257,7 +257,7 @@ MIT © SkillStash
 ## 💬 Support
 
 - **Issues**: [GitHub Issues](https://github.com/yourusername/skillstash/issues)
-- **Email**: hello@skillstack.dev
+- **Email**: hello@skillstash.dev
 - **Discord**: Join our [community server](https://discord.gg/skillstash)
 
 ---

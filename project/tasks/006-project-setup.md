@@ -79,7 +79,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   
-  deploy-indexer:
+  deploy-ingester:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -96,8 +96,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       
-      - name: Deploy Indexer Worker
-        working-directory: ./workers/indexer
+      - name: Deploy ingester Worker
+        working-directory: ./workers/ingester
         run: pnpm run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -135,8 +135,8 @@ jobs:
         run: pnpm turbo run build --filter=@skillstash/cli
       
       - name: Publish to npm
-        working-directory: ./packages/cli
-        run: pnpm publish --access public --no-git-checks
+        working-directory: ./apps/cli
+        run: npm publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
@@ -155,7 +155,7 @@ ENVIRONMENT=development
 API_VERSION=v1
 ```
 
-### Indexer Worker (`workers/indexer/.dev.vars`)
+### ingester Worker (`workers/ingester/.dev.vars`)
 ```bash
 GITHUB_TOKEN=your_github_token_here
 ENVIRONMENT=development
@@ -218,7 +218,7 @@ skillstash/
 │   └── config/                 # Shared configs (tsconfig, eslint)
 ├── workers/
 │   ├── api/                    # Registry API worker
-│   └── indexer/                # Plugin indexer worker
+│   └── ingester/                # Plugin ingester worker
 ├── .github/
 │   └── workflows/
 │       ├── deploy-web.yml      # Deploy frontend
@@ -266,7 +266,7 @@ EOF
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "deploy:web": "turbo run build --filter=web && vercel --prod",
     "deploy:workers": "turbo run deploy --filter=@skillstash/workers-*",
-    "publish:cli": "turbo run build --filter=@skillstash/cli && cd packages/cli && npm publish"
+    "publish:cli": "turbo run build --filter=@skillstash/cli && cd apps/cli && npm publish"
   },
   "devDependencies": {
     "turbo": "^1.11.0",
@@ -332,106 +332,6 @@ EOF
 }
 ```
 
-### 5. Shared Types Package (`packages/shared/`)
-
-```typescript
-// packages/shared/src/types.ts
-
-export interface Plugin {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  author_id: string;
-  author_type: 'user' | 'org';
-  repo_url: string;
-  marketplace_url: string;
-  homepage_url: string | null;
-  category: string;
-  tags: string[];
-  version: string;
-  latest_commit_sha: string | null;
-  downloads: number;
-  stars: number;
-  verified: boolean;
-  security_audited: boolean;
-  official: boolean;
-  created_at: string;
-  updated_at: string;
-  last_indexed_at: string | null;
-}
-
-export interface Skill {
-  id: string;
-  plugin_id: string;
-  name: string;
-  description: string | null;
-  path: string;
-  capabilities: string[];
-  auto_load: boolean;
-  created_at: string;
-}
-
-export interface Agent {
-  id: string;
-  plugin_id: string;
-  name: string;
-  description: string | null;
-  path: string;
-  type: 'subagent' | 'chat' | 'workflow' | null;
-  created_at: string;
-}
-
-export interface Command {
-  id: string;
-  plugin_id: string;
-  name: string;
-  description: string | null;
-  path: string;
-  usage_example: string | null;
-  created_at: string;
-}
-
-export interface MCPServer {
-  id: string;
-  plugin_id: string;
-  name: string;
-  description: string | null;
-  path: string;
-  service_type: string | null;
-  created_at: string;
-}
-
-export interface Collection {
-  id: string;
-  slug: string;
-  name: string;
-  description: string | null;
-  author_id: string;
-  featured: boolean;
-  downloads: number;
-  created_at: string;
-  updated_at: string;
-}
-```
-
-```json
-// packages/shared/package.json
-{
-  "name": "@skillstash/shared",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.3"
-  }
-}
-```
-
 ## Infrastructure Setup
 
 ### Cloudflare Setup
@@ -469,8 +369,8 @@ wrangler r2 bucket create skillstash-cache
 
 #### 4. Set Secrets
 ```bash
-# Set GitHub token for indexer
-cd workers/indexer
+# Set GitHub token for ingester
+cd workers/ingester
 wrangler secret put GITHUB_TOKEN
 
 # Enter your GitHub personal access token when prompted

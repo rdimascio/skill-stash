@@ -15,11 +15,11 @@ The CI/CD pipeline has been configured to support Alchemy's dual-stage deploymen
 - **Resources**:
   - D1 Database: `skillstash-registry`
   - R2 Bucket: `skillstash-cache`
-  - Workers: `skillstash-api`, `skillstash-indexer`
+  - Workers: `skillstash-api`, `skillstash-ingester`
 - **Custom Domains**:
-  - API: `api.skillstack.dev`
-  - Indexer: `indexer.skillstack.dev`
-- **Cron Jobs**: Indexer runs daily at 2 AM UTC
+  - API: `api.skillstash.dev`
+  - ingester: `ingester.skillstash.dev`
+- **Cron Jobs**: ingester runs daily at 2 AM UTC
 
 ### Preview Deployments
 - **Trigger**: Pull request opened, reopened, or synchronized
@@ -27,7 +27,7 @@ The CI/CD pipeline has been configured to support Alchemy's dual-stage deploymen
 - **Resources**:
   - D1 Database: `skillstash-registry-pr-42`
   - R2 Bucket: `skillstash-cache-pr-42`
-  - Workers: `skillstash-api-pr-42`, `skillstash-indexer-pr-42`
+  - Workers: `skillstash-api-pr-42`, `skillstash-ingester-pr-42`
 - **Custom Domains**: None (uses workers.dev URLs)
 - **Cron Jobs**: Disabled for preview environments
 - **Cleanup**: Automatically destroyed when PR closes
@@ -86,7 +86,7 @@ Prevents simultaneous deployments for the same branch/PR.
 ### GitHub Integration
 | Secret | Description | Note |
 |--------|-------------|------|
-| `GITHUB_TOKEN` | For indexer and PR comments | Automatically provided by GitHub Actions |
+| `GITHUB_TOKEN` | For ingester and PR comments | Automatically provided by GitHub Actions |
 
 ## Alchemy Script Configuration
 
@@ -142,7 +142,7 @@ Your worker preview environment has been deployed for PR #42
 
 ### Endpoints
 - **API Worker**: https://skillstash-api-pr-42.your-subdomain.workers.dev
-- **Indexer Worker**: https://skillstash-indexer-pr-42.your-subdomain.workers.dev
+- **ingester Worker**: https://skillstash-ingester-pr-42.your-subdomain.workers.dev
 
 ### Resources
 - **Database**: `skillstash-registry-pr-42`

@@ -8,15 +8,15 @@ Allow users to manually submit their GitHub repositories for immediate indexing,
 
 ✅ **Backend Already Implemented!**
 
-The indexer worker already has a manual import endpoint:
+The ingester worker already has a manual import endpoint:
 
 ```http
-POST https://indexer.skillstash.com/index/:owner/:repo
+POST https://ingester.skillstash.com/index/:owner/:repo
 ```
 
 **Example**:
 ```bash
-curl -X POST https://indexer.skillstash.com/index/anthropics/claude-code-git
+curl -X POST https://ingester.skillstash.com/index/anthropics/claude-code-git
 ```
 
 **Response (Success)**:
@@ -133,9 +133,9 @@ export async function importPlugin(repoUrl: string) {
 
   const [, owner, repo] = match;
 
-  // Call indexer endpoint
+  // Call ingester endpoint
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_INDEXER_URL}/index/${owner}/${repo}`,
+    `${process.env.NEXT_PUBLIC_ingester_URL}/index/${owner}/${repo}`,
     { method: 'POST' }
   );
 
@@ -278,14 +278,14 @@ Update task scope to include:
 **New Feature: Manual Plugin Import**
 - Import page at `/import` route
 - GitHub URL input with validation
-- Call indexer POST endpoint
+- Call ingester POST endpoint
 - Success/error handling
 - Link to documentation
 - Responsive design
 
 **Acceptance Criteria**:
 - [ ] Import form component created
-- [ ] API integration with indexer
+- [ ] API integration with ingester
 - [ ] Error handling with helpful messages
 - [ ] Success redirect to plugin page
 - [ ] Mobile responsive

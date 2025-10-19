@@ -36,6 +36,37 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
+  apps/cli:
+    dependencies:
+      boxen:
+        specifier: ^8.0.1
+        version: 8.0.1
+      chalk:
+        specifier: ^5.3.0
+        version: 5.6.2
+      cli-table3:
+        specifier: ^0.6.5
+        version: 0.6.5
+      commander:
+        specifier: ^11.1.0
+        version: 11.1.0
+      ora:
+        specifier: ^8.0.1
+        version: 8.2.0
+      prompts:
+        specifier: ^2.4.2
+        version: 2.4.2
+    devDependencies:
+      '@types/prompts':
+        specifier: ^2.4.9
+        version: 2.4.9
+      tsx:
+        specifier: ^4.7.0
+        version: 4.20.6
+      vitest:
+        specifier: ^1.0.4
+        version: 1.6.1(@types/node@20.19.22)
+
   apps/web:
     dependencies:
       '@radix-ui/react-slot':
@@ -44,9 +75,6 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@18.3.7)(@types/react@18.3.26)(react-dom@18.3.1)(react@18.3.1)
-      '@skillstash/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -115,40 +143,6 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  packages/cli:
-    dependencies:
-      '@skillstash/shared':
-        specifier: workspace:*
-        version: link:../shared
-      boxen:
-        specifier: ^8.0.1
-        version: 8.0.1
-      chalk:
-        specifier: ^5.3.0
-        version: 5.6.2
-      cli-table3:
-        specifier: ^0.6.5
-        version: 0.6.5
-      commander:
-        specifier: ^11.1.0
-        version: 11.1.0
-      ora:
-        specifier: ^8.0.1
-        version: 8.2.0
-      prompts:
-        specifier: ^2.4.2
-        version: 2.4.2
-    devDependencies:
-      '@types/prompts':
-        specifier: ^2.4.9
-        version: 2.4.9
-      tsx:
-        specifier: ^4.7.0
-        version: 4.20.6
-      vitest:
-        specifier: ^1.0.4
-        version: 1.6.1(@types/node@20.19.22)
-
   packages/db:
     dependencies:
       drizzle-orm:
@@ -161,12 +155,6 @@ importers:
       drizzle-kit:
         specifier: ^0.20.14
         version: 0.20.18
-      typescript:
-        specifier: ^5.3.3
-        version: 5.9.3
-
-  packages/shared:
-    devDependencies:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
@@ -196,7 +184,7 @@ importers:
         specifier: ^3.24.0
         version: 3.114.15(@cloudflare/workers-types@4.20251011.0)
 
-  workers/indexer:
+  workers/ingester:
     dependencies:
       '@octokit/rest':
         specifier: ^20.0.2
@@ -204,9 +192,6 @@ importers:
       '@skillstash/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@skillstash/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       drizzle-orm:
         specifier: ^0.29.3
         version: 0.29.5(@cloudflare/workers-types@4.20251011.0)

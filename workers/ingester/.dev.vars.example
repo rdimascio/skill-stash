@@ -1,5 +1,5 @@
 # GitHub Personal Access Token
-# Required for indexer to access GitHub API
+# Required for ingester to access GitHub API
 # Create at: https://github.com/settings/tokens
 # Permissions needed: public_repo (read)
 GITHUB_TOKEN=your-github-token-here

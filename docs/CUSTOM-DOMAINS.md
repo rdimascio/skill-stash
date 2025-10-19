@@ -6,15 +6,15 @@ This guide explains how to configure custom domains for SkillStash workers.
 
 The following custom domains are configured in `alchemy.run.ts`:
 
-- **API Worker**: `api.skillstack.dev`
-- **Indexer Worker**: `indexer.skillstack.dev`
-- **Web App** (future): `skillstack.dev` or `www.skillstack.dev`
+- **API Worker**: `api.skillstash.dev`
+- **ingester Worker**: `ingester.skillstash.dev`
+- **Web App** (future): `skillstash.dev` or `www.skillstash.dev`
 
 ## DNS Configuration Required
 
 ### Prerequisites
 
-1. Domain `skillstack.dev` registered and active
+1. Domain `skillstash.dev` registered and active
 2. Domain nameservers pointed to Cloudflare
 3. Cloudflare account has access to the domain
 
@@ -41,8 +41,8 @@ Target: skillstash-api.your-subdomain.workers.dev
 Proxy: No (if external) / Yes (if Cloudflare)
 
 Type: CNAME
-Name: indexer
-Target: skillstash-indexer.your-subdomain.workers.dev
+Name: ingester
+Target: skillstash-ingester.your-subdomain.workers.dev
 Proxy: No (if external) / Yes (if Cloudflare)
 ```
 
@@ -65,7 +65,7 @@ After deployment, test both URLs:
 
 ```bash
 # Test custom domain
-curl https://api.skillstack.dev/health
+curl https://api.skillstash.dev/health
 
 # Test workers.dev fallback
 curl https://skillstash-api.your-subdomain.workers.dev/health
@@ -79,8 +79,8 @@ After deployment, update your web app environment variables:
 
 **`.env` (for Alchemy deployment)**:
 ```bash
-NEXT_PUBLIC_API_URL=https://api.skillstack.dev
-NEXT_PUBLIC_INDEXER_URL=https://indexer.skillstack.dev
+NEXT_PUBLIC_API_URL=https://api.skillstash.dev
+NEXT_PUBLIC_ingester_URL=https://ingester.skillstash.dev
 ```
 
 ## Domain Verification
@@ -99,7 +99,7 @@ After deployment, verify domains are active:
 
 #### Domain Not Resolving
 
-**Problem**: `api.skillstack.dev` returns DNS error
+**Problem**: `api.skillstash.dev` returns DNS error
 
 **Solutions**:
 1. Verify domain nameservers point to Cloudflare
@@ -132,12 +132,12 @@ After deployment, verify domains are active:
 Workers are always accessible via both URLs:
 
 **Primary** (Custom Domain):
-- `https://api.skillstack.dev`
-- `https://indexer.skillstack.dev`
+- `https://api.skillstash.dev`
+- `https://ingester.skillstash.dev`
 
 **Fallback** (Workers.dev):
 - `https://skillstash-api.your-subdomain.workers.dev`
-- `https://skillstash-indexer.your-subdomain.workers.dev`
+- `https://skillstash-ingester.your-subdomain.workers.dev`
 
 Use workers.dev URLs for testing and as fallback if custom domains have issues.
 
@@ -149,10 +149,10 @@ When the web app is migrated to TanStack Start (Task 009), add:
 // In alchemy.run.ts
 const webApp = await TanStackStart("skillstash-web", {
   path: "./apps/web",
-  domains: ["skillstack.dev", "www.skillstack.dev"],
+  domains: ["skillstash.dev", "www.skillstash.dev"],
   vars: {
     NEXT_PUBLIC_API_URL: apiWorker.url,
-    NEXT_PUBLIC_INDEXER_URL: indexerWorker.url,
+    NEXT_PUBLIC_ingester_URL: ingesterWorker.url,
   },
 });
 ```

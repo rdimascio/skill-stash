@@ -572,9 +572,9 @@ export async function importPlugin(repoUrl: string) {
   const [, owner, repo] = match;
   const cleanRepo = repo.replace(/\.git$/, ''); // Remove .git suffix if present
 
-  // Call indexer endpoint
+  // Call ingester endpoint
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_INDEXER_URL}/index/${owner}/${cleanRepo}`,
+    `${process.env.NEXT_PUBLIC_ingester_URL}/index/${owner}/${cleanRepo}`,
     {
       method: 'POST',
       cache: 'no-store' // Don't cache import requests
@@ -658,7 +658,7 @@ export default config;
 - [ ] All pages render correctly
 - [ ] **Import page functional** (NEW)
   - [ ] GitHub URL validation
-  - [ ] API integration with indexer
+  - [ ] API integration with ingester
   - [ ] Success/error handling
   - [ ] Link to documentation
 - [ ] Fast page loads (< 1s LCP)

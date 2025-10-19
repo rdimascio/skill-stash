@@ -24,7 +24,7 @@ Coordinate the launch of SkillStash MVP across all components, ensuring everythi
   - [ ] Vercel custom domain connected
 
 ### Backend (Week 1)
-- [ ] **Indexer Worker**
+- [ ] **ingester Worker**
   - [ ] Deployed to Cloudflare
   - [ ] GitHub webhook configured
   - [ ] Cron job scheduled (every 6 hours)
@@ -233,7 +233,7 @@ Coordinate the launch of SkillStash MVP across all components, ensuring everythi
 ```
 Week 1: Backend + Infrastructure
 ├── Day 1-2: Database schema + API worker
-├── Day 3-4: Indexer worker
+├── Day 3-4: ingester worker
 └── Day 5-7: Test + deploy
 
 Week 2: CLI + Frontend
@@ -252,7 +252,7 @@ Week 3: Polish + Launch
 
 ### Stream A (Backend Engineer)
 1. Task 001: Database Schema
-2. Task 002: Indexer Service
+2. Task 002: ingester Service
 3. Task 003: Registry API
 4. Test & deploy
 

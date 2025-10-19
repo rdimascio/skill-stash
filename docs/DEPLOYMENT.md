@@ -11,7 +11,7 @@
 This guide covers deploying the complete SkillStash platform using **Alchemy** for infrastructure management. Alchemy provides a TypeScript-based infrastructure-as-code approach, simplifying deployment and configuration management.
 
 **Components to Deploy**:
-- **Cloudflare Workers** (API + Indexer) - via Alchemy
+- **Cloudflare Workers** (API + ingester) - via Alchemy
 - **Cloudflare D1** (Database) - via Alchemy
 - **Cloudflare R2** (Cache Storage) - via Alchemy
 - **Vercel** (Web Frontend) - via Vercel CLI
@@ -97,7 +97,7 @@ CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id-here
 ALCHEMY_PASSWORD=your-encryption-password-here
 ALCHEMY_STATE_TOKEN=your-state-management-token-here
 
-# GitHub Token (for indexer and PR comments)
+# GitHub Token (for ingester and PR comments)
 GITHUB_TOKEN=your-github-personal-access-token-here
 ```
 
@@ -107,7 +107,7 @@ GITHUB_TOKEN=your-github-personal-access-token-here
 - `CLOUDFLARE_ACCOUNT_ID`: Find in Cloudflare dashboard URL or run `wrangler whoami`
 - `ALCHEMY_PASSWORD`: Choose a strong password for encrypting Alchemy state (e.g., `openssl rand -base64 32`)
 - `ALCHEMY_STATE_TOKEN`: Generate a secure random token (e.g., `openssl rand -hex 32`)
-- `GITHUB_TOKEN`: GitHub automatically provides this secret - no need to create manually. Used for indexer and PR preview comments
+- `GITHUB_TOKEN`: GitHub automatically provides this secret - no need to create manually. Used for ingester and PR preview comments
 
 **PR Preview Deployments**:
 The CI/CD pipeline now supports automatic preview deployments for pull requests:
@@ -172,10 +172,10 @@ pnpm --filter @skillstash/db exec wrangler d1 execute skillstash-registry \
   --file=src/seed.sql
 ```
 
-Or manually trigger the indexer to populate data:
+Or manually trigger the ingester to populate data:
 ```bash
 # Get your API worker URL from alchemy deploy output
-curl -X POST https://skillstash-indexer.your-subdomain.workers.dev/index/owner/repo
+curl -X POST https://skillstash-ingester.your-subdomain.workers.dev/index/owner/repo
 ```
 
 ---
@@ -190,7 +190,7 @@ The infrastructure is defined in `/alchemy.run.ts`. Review it to understand what
 // - D1 Database (skillstash-registry)
 // - R2 Bucket (skillstash-cache)
 // - API Worker (skillstash-api)
-// - Indexer Worker (skillstash-indexer) with cron schedule
+// - ingester Worker (skillstash-ingester) with cron schedule
 ```
 
 ### Step 3.2: Deploy Infrastructure
@@ -206,7 +206,7 @@ alchemy deploy
 1. Creates D1 database `skillstash-registry` (if not exists)
 2. Creates R2 bucket `skillstash-cache` (if not exists)
 3. Deploys API worker with DB and CACHE bindings
-4. Deploys Indexer worker with DB and CACHE bindings + cron schedule
+4. Deploys ingester worker with DB and CACHE bindings + cron schedule
 5. Injects secrets from `.env` file
 
 **Expected Output**:
@@ -214,7 +214,7 @@ alchemy deploy
 ✅ D1 Database created: skillstash-registry
 ✅ R2 Bucket created: skillstash-cache
 ✅ API Worker deployed: https://skillstash-api.your-subdomain.workers.dev
-✅ Indexer Worker deployed: https://skillstash-indexer.your-subdomain.workers.dev
+✅ ingester Worker deployed: https://skillstash-ingester.your-subdomain.workers.dev
 ```
 
 ### Step 3.3: Verify Deployment
@@ -225,8 +225,8 @@ curl https://skillstash-api.your-subdomain.workers.dev/health
 # Expected response:
 # {"status":"ok","timestamp":"2025-10-18T..."}
 
-# Test Indexer health endpoint
-curl https://skillstash-indexer.your-subdomain.workers.dev/health
+# Test ingester health endpoint
+curl https://skillstash-ingester.your-subdomain.workers.dev/health
 
 # Expected response:
 # {"status":"ok"}
@@ -237,7 +237,7 @@ Copy the worker URLs from the deployment output. You'll need them for the web ap
 
 **Example URLs**:
 - API: `https://skillstash-api.your-subdomain.workers.dev`
-- Indexer: `https://skillstash-indexer.your-subdomain.workers.dev`
+- ingester: `https://skillstash-ingester.your-subdomain.workers.dev`
 
 ---
 
@@ -248,7 +248,7 @@ Copy the worker URLs from the deployment output. You'll need them for the web ap
 Create `apps/web/.env.local`:
 ```bash
 NEXT_PUBLIC_API_URL=https://skillstash-api.<your-subdomain>.workers.dev
-NEXT_PUBLIC_INDEXER_URL=https://skillstash-indexer.<your-subdomain>.workers.dev
+NEXT_PUBLIC_ingester_URL=https://skillstash-ingester.<your-subdomain>.workers.dev
 ```
 
 **Important**: Replace `<your-subdomain>` with your actual Cloudflare Workers subdomain from Phase 3.
@@ -296,14 +296,14 @@ vercel
 vercel env add NEXT_PUBLIC_API_URL
 # When prompted, enter: https://skillstash-api.<your-subdomain>.workers.dev
 
-vercel env add NEXT_PUBLIC_INDEXER_URL
-# When prompted, enter: https://skillstash-indexer.<your-subdomain>.workers.dev
+vercel env add NEXT_PUBLIC_ingester_URL
+# When prompted, enter: https://skillstash-ingester.<your-subdomain>.workers.dev
 ```
 
 **Option B: Via Vercel Dashboard**
 1. Go to https://vercel.com/your-project/settings/environment-variables
 2. Add `NEXT_PUBLIC_API_URL`
-3. Add `NEXT_PUBLIC_INDEXER_URL`
+3. Add `NEXT_PUBLIC_ingester_URL`
 4. Redeploy
 
 ### 4.5 Deploy to Production
@@ -338,12 +338,12 @@ curl -I https://skillstash.vercel.app
 
 ### 4.6 Configure Custom Domain (Optional)
 
-If you have a custom domain (e.g., skillstack.dev):
+If you have a custom domain (e.g., skillstash.dev):
 
 **Via Vercel Dashboard:**
 1. Go to Project Settings → Domains
-2. Add your domain (skillstack.dev)
-3. Add www subdomain (www.skillstack.dev)
+2. Add your domain (skillstash.dev)
+3. Add www subdomain (www.skillstash.dev)
 4. Follow DNS configuration instructions
 5. Wait for DNS propagation (can take up to 24 hours)
 
@@ -364,7 +364,7 @@ Value: cname.vercel-dns.com
 
 ### 5.1 Verify Package Configuration
 
-Check `packages/cli/package.json`:
+Check `apps/cli/package.json`:
 ```json
 {
   "name": "@skillstash/cli",
@@ -381,7 +381,7 @@ Check `packages/cli/package.json`:
 
 ```bash
 # Navigate to CLI package
-cd packages/cli
+cd apps/cli
 
 # Clean and rebuild
 rm -rf dist
@@ -460,12 +460,12 @@ curl https://skillstash-api.<your-subdomain>.workers.dev/api/plugins/git-workflo
 curl "https://skillstash-api.<your-subdomain>.workers.dev/api/plugins/search?q=git"
 # ✓ Should return: Search results
 
-# 5. Indexer Health
-curl https://skillstash-indexer.<your-subdomain>.workers.dev/health
+# 5. ingester Health
+curl https://skillstash-ingester.<your-subdomain>.workers.dev/health
 # ✓ Should return: {"status":"ok"}
 
-# 6. Indexer Stats
-curl https://skillstash-indexer.<your-subdomain>.workers.dev/stats
+# 6. ingester Stats
+curl https://skillstash-ingester.<your-subdomain>.workers.dev/stats
 # ✓ Should return: Stats object
 
 # 7. Web App Home
@@ -574,7 +574,7 @@ wrangler d1 list
 
 # Copy the correct database_id
 # Update workers/api/wrangler.toml
-# Update workers/indexer/wrangler.toml
+# Update workers/ingester/wrangler.toml
 # Redeploy workers
 ```
 
@@ -594,14 +594,14 @@ curl https://skillstash-api.<your-subdomain>.workers.dev/api/plugins
 
 ### Issue: "No plugins showing on website"
 
-**Solution**: Seed database and/or run indexer.
+**Solution**: Seed database and/or run ingester.
 
 ```bash
 # Seed database
 wrangler d1 execute skillstash-registry --file=packages/db/src/seed.sql
 
 # Manually trigger indexing
-curl https://skillstash-indexer.<your-subdomain>.workers.dev/index
+curl https://skillstash-ingester.<your-subdomain>.workers.dev/index
 
 # Verify plugins exist
 wrangler d1 execute skillstash-registry --command="SELECT COUNT(*) FROM plugins"
@@ -613,7 +613,7 @@ wrangler d1 execute skillstash-registry --command="SELECT COUNT(*) FROM plugins"
 
 ```bash
 # The CLI uses the API URL from:
-# Default: https://api.skillstack.dev (production)
+# Default: https://api.skillstash.dev (production)
 # Or set via: SKILLSTASH_API_URL environment variable
 
 # Set custom API URL:
@@ -625,17 +625,17 @@ skillstash search git
 
 ### Issue: "Import page not working"
 
-**Solution**: Verify indexer URL in web app environment variables.
+**Solution**: Verify ingester URL in web app environment variables.
 
 ```bash
 # Check Vercel environment variables
 vercel env ls
 
-# Ensure NEXT_PUBLIC_INDEXER_URL is set
-# Should be: https://skillstash-indexer.<your-subdomain>.workers.dev
+# Ensure NEXT_PUBLIC_ingester_URL is set
+# Should be: https://skillstash-ingester.<your-subdomain>.workers.dev
 
 # If missing, add it:
-vercel env add NEXT_PUBLIC_INDEXER_URL
+vercel env add NEXT_PUBLIC_ingester_URL
 
 # Redeploy
 vercel --prod
@@ -662,10 +662,10 @@ cd workers/api
 wrangler rollback
 ```
 
-### Rollback Indexer Worker
+### Rollback ingester Worker
 
 ```bash
-cd workers/indexer
+cd workers/ingester
 wrangler rollback
 ```
 
@@ -689,7 +689,7 @@ wrangler rollback
 
 ## Custom Domain Setup (Advanced)
 
-### For skillstack.dev
+### For skillstash.dev
 
 **1. Configure in Vercel:**
 - Add domain in Vercel dashboard
@@ -709,7 +709,7 @@ Value: cname.vercel-dns.com
 
 **3. Configure Subdomains (Optional):**
 ```
-# api.skillstack.dev → Cloudflare Worker
+# api.skillstash.dev → Cloudflare Worker
 Type: CNAME
 Name: api
 Value: skillstash-api.<your-subdomain>.workers.dev
@@ -718,8 +718,8 @@ Value: skillstash-api.<your-subdomain>.workers.dev
 **4. Wait for DNS Propagation:**
 ```bash
 # Check DNS propagation
-dig skillstack.dev
-dig www.skillstack.dev
+dig skillstash.dev
+dig www.skillstash.dev
 
 # Should show your Vercel CNAME
 ```
@@ -731,14 +731,14 @@ dig www.skillstack.dev
 ### Web App (.env.local)
 ```
 NEXT_PUBLIC_API_URL=https://skillstash-api.<your-subdomain>.workers.dev
-NEXT_PUBLIC_INDEXER_URL=https://skillstash-indexer.<your-subdomain>.workers.dev
+NEXT_PUBLIC_ingester_URL=https://skillstash-ingester.<your-subdomain>.workers.dev
 ```
 
 ### API Worker (Cloudflare Secrets)
 - Database ID in wrangler.toml
 - R2 bucket binding in wrangler.toml
 
-### Indexer Worker (Cloudflare Secrets)
+### ingester Worker (Cloudflare Secrets)
 ```bash
 # Set via wrangler secret put
 GITHUB_TOKEN=ghp_xxxxxxxxxxxxx
@@ -753,11 +753,11 @@ Your SkillStash deployment is complete!
 **URLs:**
 - Web App: https://skillstash.vercel.app (or your custom domain)
 - API: https://skillstash-api.<your-subdomain>.workers.dev
-- Indexer: https://skillstash-indexer.<your-subdomain>.workers.dev
+- ingester: https://skillstash-ingester.<your-subdomain>.workers.dev
 
 **Next Steps:**
 1. Test all functionality
-2. Add more plugins (manually or via indexer)
+2. Add more plugins (manually or via ingester)
 3. Write documentation
 4. Announce launch! 🚀
 
