@@ -6,15 +6,15 @@ This guide explains how to configure custom domains for SkillStash workers.
 
 The following custom domains are configured in `alchemy.run.ts`:
 
-- **API Worker**: `api.skillstash.com`
-- **Indexer Worker**: `indexer.skillstash.com`
-- **Web App** (future): `skillstash.com` or `www.skillstash.com`
+- **API Worker**: `api.skillstack.dev`
+- **Indexer Worker**: `indexer.skillstack.dev`
+- **Web App** (future): `skillstack.dev` or `www.skillstack.dev`
 
 ## DNS Configuration Required
 
 ### Prerequisites
 
-1. Domain `skillstash.com` registered and active
+1. Domain `skillstack.dev` registered and active
 2. Domain nameservers pointed to Cloudflare
 3. Cloudflare account has access to the domain
 
@@ -65,7 +65,7 @@ After deployment, test both URLs:
 
 ```bash
 # Test custom domain
-curl https://api.skillstash.com/health
+curl https://api.skillstack.dev/health
 
 # Test workers.dev fallback
 curl https://skillstash-api.your-subdomain.workers.dev/health
@@ -79,8 +79,8 @@ After deployment, update your web app environment variables:
 
 **`.env` (for Alchemy deployment)**:
 ```bash
-NEXT_PUBLIC_API_URL=https://api.skillstash.com
-NEXT_PUBLIC_INDEXER_URL=https://indexer.skillstash.com
+NEXT_PUBLIC_API_URL=https://api.skillstack.dev
+NEXT_PUBLIC_INDEXER_URL=https://indexer.skillstack.dev
 ```
 
 ## Domain Verification
@@ -99,7 +99,7 @@ After deployment, verify domains are active:
 
 #### Domain Not Resolving
 
-**Problem**: `api.skillstash.com` returns DNS error
+**Problem**: `api.skillstack.dev` returns DNS error
 
 **Solutions**:
 1. Verify domain nameservers point to Cloudflare
@@ -132,8 +132,8 @@ After deployment, verify domains are active:
 Workers are always accessible via both URLs:
 
 **Primary** (Custom Domain):
-- `https://api.skillstash.com`
-- `https://indexer.skillstash.com`
+- `https://api.skillstack.dev`
+- `https://indexer.skillstack.dev`
 
 **Fallback** (Workers.dev):
 - `https://skillstash-api.your-subdomain.workers.dev`
@@ -149,7 +149,7 @@ When the web app is migrated to TanStack Start (Task 009), add:
 // In alchemy.run.ts
 const webApp = await TanStackStart("skillstash-web", {
   path: "./apps/web",
-  domains: ["skillstash.com", "www.skillstash.com"],
+  domains: ["skillstack.dev", "www.skillstack.dev"],
   vars: {
     NEXT_PUBLIC_API_URL: apiWorker.url,
     NEXT_PUBLIC_INDEXER_URL: indexerWorker.url,
