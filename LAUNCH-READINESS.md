@@ -33,19 +33,18 @@ All development work is **COMPLETE** (6/7 tasks done). The platform is code-comp
 | CLI Tool | ✅ Complete | 9 commands, beautiful UI |
 | Web Frontend | ✅ Complete | Next.js 15, all pages, import feature |
 
-### 🟡 Deployment (0% Complete)
+### 🟡 Deployment (0% Complete) - Now Using Alchemy
 
 | Task | Status | Estimated Time |
 |------|--------|----------------|
-| Create Cloudflare D1 database | ⏳ Pending | 5 minutes |
-| Create Cloudflare R2 bucket | ⏳ Pending | 5 minutes |
-| Deploy API worker | ⏳ Pending | 30 minutes |
-| Deploy Indexer worker | ⏳ Pending | 30 minutes |
-| Configure GitHub token secret | ⏳ Pending | 5 minutes |
+| Configure Alchemy & authenticate | ⏳ Pending | 15 minutes |
+| Create .env file with secrets | ⏳ Pending | 5 minutes |
+| Deploy infrastructure with Alchemy | ⏳ Pending | 15 minutes |
+| Verify workers & database | ⏳ Pending | 15 minutes |
 | Deploy web app to Vercel | ⏳ Pending | 30 minutes |
 | Configure custom domain | ⏳ Pending | 15 minutes |
 
-**Total Deployment Time**: ~2 hours
+**Total Deployment Time**: ~1.5 hours (faster with Alchemy!)
 
 ### 🟡 Content & Data (20% Complete)
 
@@ -97,80 +96,78 @@ All development work is **COMPLETE** (6/7 tasks done). The platform is code-comp
 
 ---
 
-## Immediate Action Items (Next 2 Hours)
+## Immediate Action Items (Next 1.5 Hours) - Using Alchemy
 
-### 1. Cloudflare Setup (30 minutes)
+### 1. Alchemy Setup (15 minutes)
 
 ```bash
+# Install Alchemy CLI globally
+npm install -g alchemy
+
+# Configure Alchemy with Cloudflare credentials
+alchemy configure
+# Enter: Cloudflare API Token
+# Enter: Cloudflare Account ID
+
 # Authenticate with Cloudflare
-wrangler login
-
-# Create D1 database
-wrangler d1 create skillstash-registry
-# Save the database_id output
-
-# Create R2 bucket
-wrangler r2 bucket create skillstash-cache
-
-# Set GitHub token secret (for indexer)
-wrangler secret put GITHUB_TOKEN --env production
-# Enter your GitHub personal access token
+alchemy login
 ```
 
-### 2. Update Configuration Files (10 minutes)
+### 2. Environment Variables Setup (5 minutes)
 
-Update these files with your actual database ID:
-- `workers/api/wrangler.toml`
-- `workers/indexer/wrangler.toml`
-
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "skillstash-registry"
-database_id = "your-actual-database-id-here"  # ← Update this
-```
-
-### 3. Deploy Backend Workers (30 minutes)
+Create `.env` file in project root:
 
 ```bash
-# Deploy API worker
-cd workers/api
-wrangler deploy
+# Copy example file
+cp .env.example .env
 
+# Edit with your values
+nano .env
+```
+
+Add the following to `.env`:
+```bash
+CLOUDFLARE_API_TOKEN=your-cloudflare-api-token
+CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id
+GITHUB_TOKEN=your-github-personal-access-token
+ENVIRONMENT=production
+```
+
+### 3. Deploy All Infrastructure with Alchemy (15 minutes)
+
+```bash
+# Deploy everything (D1, R2, both Workers)
+pnpm deploy:workers
+
+# OR use Alchemy directly
+alchemy deploy
+
+# Expected output:
+# ✅ D1 Database created: skillstash-registry
+# ✅ R2 Bucket created: skillstash-cache
+# ✅ API Worker deployed: https://skillstash-api.your-subdomain.workers.dev
+# ✅ Indexer Worker deployed: https://skillstash-indexer.your-subdomain.workers.dev
+```
+
+### 4. Verify Deployment (15 minutes)
+
+```bash
 # Test API endpoint
 curl https://skillstash-api.your-subdomain.workers.dev/health
 # Should return: {"status":"ok"}
 
-# Deploy Indexer worker
-cd ../indexer
-wrangler deploy
-
 # Test indexer endpoint
 curl https://skillstash-indexer.your-subdomain.workers.dev/health
 # Should return: {"status":"ok"}
-```
 
-### 4. Initialize Database (15 minutes)
-
-```bash
-# Run migrations (local first to test)
-pnpm db:generate
-pnpm --filter @skillstash/db exec drizzle-kit push:sqlite --config=drizzle.config.ts
-
-# Load seed data
-wrangler d1 execute skillstash-registry --file=packages/db/src/seed.sql
-
-# Verify data loaded
-wrangler d1 execute skillstash-registry --command="SELECT COUNT(*) FROM plugins"
+# Seed database
+wrangler d1 execute skillstash-registry --remote --file=packages/db/src/seed.sql
 ```
 
 ### 5. Deploy Frontend (30 minutes)
 
 ```bash
-# Install Vercel CLI if needed
-npm i -g vercel
-
-# Deploy web app
+# Deploy web app to Vercel
 cd apps/web
 vercel --prod
 

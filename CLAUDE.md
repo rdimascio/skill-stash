@@ -86,16 +86,21 @@ pnpm db:seed
 
 ### Deployment
 ```bash
+# Deploy infrastructure with Alchemy (D1, R2, Workers)
+pnpm deploy:workers    # Uses Alchemy to deploy both workers
+# OR: alchemy deploy
+
 # Deploy web app to Vercel
 pnpm deploy:web
 
-# Deploy Cloudflare Workers
-pnpm deploy:api        # API worker
-pnpm deploy:indexer    # Indexer worker
-pnpm deploy:workers    # Both workers
-
 # Publish CLI to npm
 pnpm publish:cli
+
+# Alchemy-specific commands
+alchemy dev            # Local development environment
+alchemy deploy         # Deploy all infrastructure
+alchemy destroy        # Remove all infrastructure (CAREFUL!)
+alchemy logs           # View worker logs
 ```
 
 ### Utilities

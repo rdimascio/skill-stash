@@ -1,246 +1,207 @@
 # SkillStash Deployment Guide
 
-Complete step-by-step guide to deploy SkillStash to production.
+**Last Updated**: October 18, 2025
+**Deployment Method**: Alchemy Infrastructure-as-Code
+**Estimated Total Time**: 2-3 hours
+
+---
+
+## Overview
+
+This guide covers deploying the complete SkillStash platform using **Alchemy** for infrastructure management. Alchemy provides a TypeScript-based infrastructure-as-code approach, simplifying deployment and configuration management.
+
+**Components to Deploy**:
+- **Cloudflare Workers** (API + Indexer) - via Alchemy
+- **Cloudflare D1** (Database) - via Alchemy
+- **Cloudflare R2** (Cache Storage) - via Alchemy
+- **Vercel** (Web Frontend) - via Vercel CLI
+- **npm** (CLI Package) - via npm publish
 
 ---
 
 ## Prerequisites
 
-Before deploying, ensure you have:
+### Required Accounts
+- [x] **Cloudflare Account** (free tier sufficient)
+- [x] **Vercel Account** (free tier sufficient)
+- [x] **npm Account** (for CLI publishing)
+- [x] **GitHub Account** (for Personal Access Token)
 
-- [ ] Node.js 18+ installed
-- [ ] pnpm installed (`npm install -g pnpm`)
-- [ ] Cloudflare account created
-- [ ] Wrangler CLI installed (`npm install -g wrangler`)
-- [ ] Vercel account created
-- [ ] Vercel CLI installed (`npm install -g vercel`)
-- [ ] GitHub personal access token (for indexer)
-- [ ] Domain purchased (optional, for custom domain)
+### Required Tools
+```bash
+# Install Node.js 18+
+node --version  # Should be >= 18.0.0
+
+# Install pnpm 8+
+npm install -g pnpm
+pnpm --version  # Should be >= 8.0.0
+
+# Install Alchemy CLI
+npm install -g alchemy
+
+# Install Vercel CLI (optional, for manual deployments)
+npm install -g vercel
+```
+
+### Environment Setup
+```bash
+# Clone repository
+git clone https://github.com/yourusername/skill-stash.git
+cd skill-stash
+
+# Install dependencies
+pnpm install
+
+# Build all packages
+pnpm build
+```
 
 ---
 
-## Phase 1: Cloudflare Setup (15 minutes)
+## Phase 1: Alchemy Setup (15 minutes)
 
-### 1.1 Authenticate with Cloudflare
+### Step 1.1: Configure Alchemy
+```bash
+# Configure Alchemy with your Cloudflare credentials
+alchemy configure
+
+# This will prompt for:
+# - Cloudflare API Token (create at: https://dash.cloudflare.com/profile/api-tokens)
+# - Cloudflare Account ID (find in Cloudflare dashboard)
+```
+
+**Create Cloudflare API Token**:
+1. Go to https://dash.cloudflare.com/profile/api-tokens
+2. Click "Create Token"
+3. Use "Edit Cloudflare Workers" template
+4. Permissions needed:
+   - Account > Workers Scripts > Edit
+   - Account > D1 > Edit
+   - Account > R2 > Edit
+5. Copy the token (save it securely!)
+
+### Step 1.2: Authenticate with Cloudflare
+```bash
+# Login to Cloudflare via Alchemy
+alchemy login
+```
+
+### Step 1.3: Create Environment Variables
+Create `.env` file in project root:
 
 ```bash
-# Login to Cloudflare
-wrangler login
+# Copy example file
+cp .env.example .env
 
-# This opens a browser window to authenticate
-# Grant the necessary permissions
+# Edit .env with your values
+nano .env  # or use your preferred editor
 ```
 
-### 1.2 Create D1 Database
-
+**Required Environment Variables** (`.env`):
 ```bash
-# Create the database
-wrangler d1 create skillstash-registry
+# Cloudflare Configuration
+CLOUDFLARE_API_TOKEN=your-cloudflare-api-token-here
+CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id-here
 
-# OUTPUT will look like:
-# ✅ Successfully created DB 'skillstash-registry'
-#
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "skillstash-registry"
-# database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-#
-# ⚠️ SAVE THIS database_id - you'll need it!
+# GitHub Personal Access Token
+# Create at: https://github.com/settings/tokens
+# Permissions: repo (read), user (read)
+GITHUB_TOKEN=your-github-personal-access-token-here
+
+# Environment
+ENVIRONMENT=production
 ```
 
-**Important**: Copy the `database_id` from the output. You'll need this in the next step.
-
-### 1.3 Create R2 Bucket
-
-```bash
-# Create the R2 bucket for caching
-wrangler r2 bucket create skillstash-cache
-
-# OUTPUT:
-# ✅ Created bucket 'skillstash-cache'
-```
-
-### 1.4 Update Configuration Files
-
-Update the `database_id` in **BOTH** wrangler configuration files:
-
-**File 1**: `workers/api/wrangler.toml`
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "skillstash-registry"
-database_id = "your-actual-database-id-here"  # ← Replace with your ID
-```
-
-**File 2**: `workers/indexer/wrangler.toml`
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "skillstash-registry"
-database_id = "your-actual-database-id-here"  # ← Replace with your ID
-```
-
-### 1.5 Configure GitHub Token Secret
-
-Create a GitHub personal access token:
-1. Go to https://github.com/settings/tokens
-2. Click "Generate new token (classic)"
-3. Give it these permissions:
-   - `public_repo` (Access public repositories)
-4. Copy the token
-
-Set it as a secret in Cloudflare:
-```bash
-# For the indexer worker
-cd workers/indexer
-wrangler secret put GITHUB_TOKEN
-
-# Paste your GitHub token when prompted
-# Press Enter
-```
+**Important**: Never commit `.env` to git! It's in `.gitignore`.
 
 ---
 
 ## Phase 2: Database Setup (30 minutes)
 
-### 2.1 Generate Drizzle Migrations
-
+### Step 2.1: Generate Database Schema
 ```bash
-# From project root
-pnpm install
-
-# Generate migrations from schema
-pnpm --filter @skillstash/db exec drizzle-kit generate:sqlite
-
-# This creates migration files in packages/db/migrations/
+# Generate Drizzle migrations
+pnpm db:generate
 ```
 
-### 2.2 Apply Migrations to Production Database
+### Step 2.2: Deploy Database via Alchemy
+The database will be created automatically when you run `alchemy deploy` in Phase 3.
 
+### Step 2.3: Seed Database (After Initial Deploy)
 ```bash
-# Push schema to D1 database
-pnpm --filter @skillstash/db exec drizzle-kit push:sqlite
-
-# When prompted, confirm you want to apply to production
+# After workers are deployed, seed the database
+# You can use wrangler to execute SQL against D1
+pnpm --filter @skillstash/db exec wrangler d1 execute skillstash-registry \
+  --remote \
+  --file=src/seed.sql
 ```
 
-### 2.3 Seed Database with Initial Data
-
+Or manually trigger the indexer to populate data:
 ```bash
-# Load seed data (sample plugins)
-wrangler d1 execute skillstash-registry --file=packages/db/src/seed.sql
-
-# OUTPUT:
-# ✅ Executed SQL successfully
-```
-
-### 2.4 Verify Database Setup
-
-```bash
-# Check that tables were created
-wrangler d1 execute skillstash-registry --command="SELECT name FROM sqlite_master WHERE type='table'"
-
-# Should output:
-# plugins, plugin_versions, plugin_tags, skills, agents,
-# commands, mcp_servers, authors, download_stats, etc.
-
-# Check that seed data loaded
-wrangler d1 execute skillstash-registry --command="SELECT COUNT(*) FROM plugins"
-
-# Should output a count > 0
+# Get your API worker URL from alchemy deploy output
+curl -X POST https://skillstash-indexer.your-subdomain.workers.dev/index/owner/repo
 ```
 
 ---
 
-## Phase 3: Deploy Backend Workers (30 minutes)
+## Phase 3: Deploy Workers with Alchemy (30 minutes)
 
-### 3.1 Build All Packages
+### Step 3.1: Review Infrastructure Definition
+The infrastructure is defined in `/alchemy.run.ts`. Review it to understand what will be deployed:
 
-```bash
-# From project root
-pnpm build
-
-# This builds:
-# - packages/db
-# - packages/shared
-# - workers/api
-# - workers/indexer
-# - packages/cli
-# - apps/web
+```typescript
+// This file defines:
+// - D1 Database (skillstash-registry)
+// - R2 Bucket (skillstash-cache)
+// - API Worker (skillstash-api)
+// - Indexer Worker (skillstash-indexer) with cron schedule
 ```
 
-### 3.2 Deploy API Worker
-
+### Step 3.2: Deploy Infrastructure
 ```bash
-# Navigate to API worker
-cd workers/api
+# Deploy all infrastructure (D1, R2, Workers)
+pnpm deploy:workers
 
-# Deploy to Cloudflare
-wrangler deploy
-
-# OUTPUT:
-# ✨ Deployment complete!
-# URL: https://skillstash-api.<your-subdomain>.workers.dev
-#
-# ⚠️ SAVE THIS URL - you'll need it for the web app
+# OR use Alchemy directly
+alchemy deploy
 ```
 
-**Test the API:**
-```bash
-# Test health endpoint
-curl https://skillstash-api.<your-subdomain>.workers.dev/health
+**What this does**:
+1. Creates D1 database `skillstash-registry` (if not exists)
+2. Creates R2 bucket `skillstash-cache` (if not exists)
+3. Deploys API worker with DB and CACHE bindings
+4. Deploys Indexer worker with DB and CACHE bindings + cron schedule
+5. Injects secrets from `.env` file
 
-# Should return:
+**Expected Output**:
+```
+✅ D1 Database created: skillstash-registry
+✅ R2 Bucket created: skillstash-cache
+✅ API Worker deployed: https://skillstash-api.your-subdomain.workers.dev
+✅ Indexer Worker deployed: https://skillstash-indexer.your-subdomain.workers.dev
+```
+
+### Step 3.3: Verify Deployment
+```bash
+# Test API health endpoint
+curl https://skillstash-api.your-subdomain.workers.dev/health
+
+# Expected response:
+# {"status":"ok","timestamp":"2025-10-18T..."}
+
+# Test Indexer health endpoint
+curl https://skillstash-indexer.your-subdomain.workers.dev/health
+
+# Expected response:
 # {"status":"ok"}
-
-# Test plugins endpoint
-curl https://skillstash-api.<your-subdomain>.workers.dev/api/plugins
-
-# Should return JSON with plugins
 ```
 
-### 3.3 Deploy Indexer Worker
+### Step 3.4: Save Worker URLs
+Copy the worker URLs from the deployment output. You'll need them for the web app configuration.
 
-```bash
-# Navigate to indexer worker
-cd ../indexer
-
-# Deploy to Cloudflare
-wrangler deploy
-
-# OUTPUT:
-# ✨ Deployment complete!
-# URL: https://skillstash-indexer.<your-subdomain>.workers.dev
-#
-# ⚠️ SAVE THIS URL - you'll need it for the web app
-```
-
-**Test the Indexer:**
-```bash
-# Test health endpoint
-curl https://skillstash-indexer.<your-subdomain>.workers.dev/health
-
-# Should return:
-# {"status":"ok"}
-
-# Test indexer stats
-curl https://skillstash-indexer.<your-subdomain>.workers.dev/stats
-
-# Should return stats about indexed plugins
-```
-
-### 3.4 Trigger Initial Indexing (Optional)
-
-```bash
-# Manually trigger indexing to populate database
-curl -X GET https://skillstash-indexer.<your-subdomain>.workers.dev/index
-
-# This will search GitHub for plugins with "claude-code" or "claude-plugin" topics
-# and index any that have .claude-plugin/marketplace.json files
-
-# Check progress
-curl https://skillstash-indexer.<your-subdomain>.workers.dev/stats
-```
+**Example URLs**:
+- API: `https://skillstash-api.your-subdomain.workers.dev`
+- Indexer: `https://skillstash-indexer.your-subdomain.workers.dev`
 
 ---
 
