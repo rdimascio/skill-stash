@@ -6,7 +6,8 @@ const app = await alchemy("skillstash");
 // Create D1 Database with Drizzle ORM support
 const database = await D1Database("skillstash-registry", {
   name: "skillstash-registry",
-  migrationsTable: "__drizzle_migrations", // Drizzle ORM migration tracking table
+  migrationsDir: "./packages/db/migrations",
+  migrationsTable: "drizzle_migrations",
 });
 
 // Create R2 Bucket for caching
