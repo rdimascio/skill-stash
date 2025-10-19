@@ -18,12 +18,17 @@ export interface Plugin {
   updated_at: string;
 }
 
+export interface PluginComponent {
+  name?: string;
+  description?: string;
+}
+
 export interface PluginDetail extends Plugin {
   readme: string;
-  skills: any[];
-  agents: any[];
-  commands: any[];
-  mcp_servers: any[];
+  skills: PluginComponent[];
+  agents: PluginComponent[];
+  commands: PluginComponent[];
+  mcp_servers: PluginComponent[];
 }
 
 export interface PaginatedResponse<T> {
@@ -160,7 +165,7 @@ export async function getCategories(): Promise<string[]> {
  */
 export async function importPlugin(repoUrl: string): Promise<{ message: string; plugin_id?: string }> {
   // Parse GitHub URL
-  const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+  const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
   if (!match) {
     throw new Error('Invalid GitHub URL. Please provide a valid GitHub repository URL.');
   }

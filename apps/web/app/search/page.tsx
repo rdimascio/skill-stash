@@ -11,15 +11,16 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     page?: string;
-  };
+  }>;
 }
 
 export default async function SearchPage({ searchParams }: PageProps) {
-  const query = searchParams.q || '';
-  const page = Number(searchParams.page) || 1;
+  const params = await searchParams;
+  const query = params.q || '';
+  const page = Number(params.page) || 1;
 
   let results = null;
   let error = null;

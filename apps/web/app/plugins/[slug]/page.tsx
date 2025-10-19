@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { Star, Download, ExternalLink, Github } from 'lucide-react';
+import { Star, Download, Github } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,13 +10,14 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const plugin = await getPlugin(params.slug);
+  const { slug } = await params;
+  const plugin = await getPlugin(slug);
 
   if (!plugin) {
     return {
@@ -37,7 +37,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function PluginDetailPage({ params }: PageProps) {
-  const plugin = await getPlugin(params.slug);
+  const { slug } = await params;
+  const plugin = await getPlugin(slug);
 
   if (!plugin) {
     notFound();

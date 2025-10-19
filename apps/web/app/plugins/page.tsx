@@ -11,17 +11,18 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     category?: string;
     sort?: 'stars' | 'downloads' | 'recent';
-  };
+  }>;
 }
 
 export default async function PluginsPage({ searchParams }: PageProps) {
-  const page = Number(searchParams.page) || 1;
-  const category = searchParams.category;
-  const sort = searchParams.sort || 'stars';
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
+  const category = params.category;
+  const sort = params.sort || 'stars';
 
   const { data: plugins, pagination } = await getPlugins({
     page,
@@ -126,7 +127,7 @@ function PaginationButtons({
   const pages = [];
   const showPages = 5;
   let startPage = Math.max(1, currentPage - Math.floor(showPages / 2));
-  let endPage = Math.min(totalPages, startPage + showPages - 1);
+  const endPage = Math.min(totalPages, startPage + showPages - 1);
 
   if (endPage - startPage < showPages - 1) {
     startPage = Math.max(1, endPage - showPages + 1);
