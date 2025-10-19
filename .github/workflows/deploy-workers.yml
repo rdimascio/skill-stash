@@ -5,15 +5,13 @@ on:
     branches: [main]
     paths:
       - 'workers/**'
-      - 'packages/shared/**'
-      - 'alchemy.run.ts'
+      - 'packages/db/**'
       - '.github/workflows/deploy-workers.yml'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     paths:
       - 'workers/**'
-      - 'packages/shared/**'
-      - 'alchemy.run.ts'
+      - 'packages/db/**'
   workflow_dispatch:
 
 # Prevent concurrent deployments for the same ref
@@ -38,8 +36,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -78,8 +74,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -120,8 +114,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
