@@ -3,40 +3,37 @@ import { Worker, D1Database, R2Bucket } from "alchemy/cloudflare";
 
 const app = await alchemy("skillstash");
 
-// Create D1 Database
+// Create D1 Database with Drizzle ORM support
 const database = await D1Database("skillstash-registry", {
-  // Database will be created if it doesn't exist
+  name: "skillstash-registry",
+  migrationsTable: "__drizzle_migrations", // Drizzle ORM migration tracking table
 });
 
-// Create R2 Bucket
+// Create R2 Bucket for caching
 const cache = await R2Bucket("skillstash-cache", {
-  // Bucket will be created if it doesn't exist
+  name: "skillstash-cache",
 });
 
 // Deploy API Worker
 const apiWorker = await Worker("skillstash-api", {
   entrypoint: "./workers/api/src/index.ts",
   bindings: {
-    DB: database,
-    CACHE: cache,
+    DB: database, // D1 Database binding
+    CACHE: cache, // R2 Bucket binding
+    ENVIRONMENT: process.env.ENVIRONMENT || "production", // Environment variable
+    GITHUB_TOKEN: alchemy.secret(process.env.GITHUB_TOKEN || ""), // Secret binding
   },
-  env: {
-    ENVIRONMENT: process.env.ENVIRONMENT || "production",
-  },
-  secrets: ["GITHUB_TOKEN"], // Reads from .env
 });
 
-// Deploy Indexer Worker
+// Deploy Indexer Worker with scheduled cron
 const indexerWorker = await Worker("skillstash-indexer", {
   entrypoint: "./workers/indexer/src/index.ts",
   bindings: {
-    DB: database,
-    CACHE: cache,
+    DB: database, // D1 Database binding
+    CACHE: cache, // R2 Bucket binding
+    ENVIRONMENT: process.env.ENVIRONMENT || "production", // Environment variable
+    GITHUB_TOKEN: alchemy.secret(process.env.GITHUB_TOKEN || ""), // Secret binding
   },
-  env: {
-    ENVIRONMENT: process.env.ENVIRONMENT || "production",
-  },
-  secrets: ["GITHUB_TOKEN"],
   triggers: {
     crons: ["0 2 * * *"], // Daily at 2 AM UTC
   },
