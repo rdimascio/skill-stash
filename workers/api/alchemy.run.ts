@@ -13,7 +13,13 @@ const apiDomains = isProd ? ['api.skillstash.dev'] : undefined;
 
 const app = await alchemy('skillstash-api', {
   stage,
-  stateStore: (scope) => new CloudflareStateStore(scope),
+  stateStore:
+    process.env.NODE_ENV === 'production'
+      ? (scope) =>
+          new CloudflareStateStore(scope, {
+            stateToken: alchemy.secret(process.env.ALCHEMY_STATE_TOKEN || ''),
+          })
+      : undefined,
 });
 
 // Deploy API Worker
