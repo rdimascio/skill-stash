@@ -11,15 +11,9 @@ import { PluginParser } from './lib/parser';
 import { DatabaseUpdater } from './lib/updater';
 import { CacheManager } from './lib/cache';
 import { validatePlugin, validateMarketplaceJson } from './lib/validation';
+import type { worker as Worker } from '../alchemy.run';
 
-type Bindings = {
-  DB: D1Database;
-  CACHE: R2Bucket;
-  GITHUB_TOKEN: string;
-  ENVIRONMENT?: string;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<{ Bindings: typeof Worker.Env }>();
 
 // CORS middleware
 app.use('*', cors());
@@ -211,7 +205,7 @@ app.get('/health', (c) => {
 /**
  * Core indexing logic
  */
-async function runIndexing(env: Bindings): Promise<{
+async function runIndexing(env: typeof Worker.Env): Promise<{
   indexed: number;
   failed: number;
   skipped: number;
@@ -337,7 +331,7 @@ interface WorkerExport {
   fetch: typeof app.fetch;
   scheduled: (
     event: ScheduledEvent,
-    env: Bindings,
+    env: typeof Worker.Env,
     ctx: ExecutionContext
   ) => Promise<void>;
 }
@@ -350,7 +344,7 @@ const worker: WorkerExport = {
 
   async scheduled(
     event: ScheduledEvent,
-    env: Bindings,
+    env: typeof Worker.Env,
     _ctx: ExecutionContext
   ): Promise<void> {
     console.log('Starting scheduled indexing...');

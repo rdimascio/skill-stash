@@ -2,10 +2,14 @@
   "name": "ingester",
   "version": "1.0.0",
   "private": true,
+  "exports": {
+    "./alchemy": "./alchemy.run.ts"
+  },
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "alchemy dev --app ingester",
+    "deploy": "alchemy deploy --app ingester",
+    "destroy": "alchemy destroy --app ingester",
     "build": "tsc",
-    "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

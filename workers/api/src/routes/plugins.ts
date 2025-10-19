@@ -1,22 +1,32 @@
 import { Hono } from 'hono';
 import { createDbClient } from '@skillstash/db';
-import { plugins, pluginVersions, skills, agents, commands } from '@skillstash/db';
+import {
+  plugins,
+  pluginVersions,
+  skills,
+  agents,
+  commands,
+} from '@skillstash/db';
 import { eq, like, or, desc, asc, and, sql, count } from 'drizzle-orm';
 import { NotFoundError } from '../middleware/error-handler';
-import { paginatedResponse, successResponse, calculatePagination } from '../lib/response';
+import {
+  paginatedResponse,
+  successResponse,
+  calculatePagination,
+} from '../lib/response';
+import type { worker as Worker } from '../../alchemy.run';
 
-type Bindings = {
-  DB: D1Database;
-  CACHE: R2Bucket;
-  ENVIRONMENT?: string;
-};
-
-const pluginsRouter = new Hono<{ Bindings: Bindings }>();
+const pluginsRouter = new Hono<{ Bindings: typeof Worker.Env }>();
 
 // GET /api/plugins - List all plugins with pagination
 pluginsRouter.get('/', async (c) => {
   const db = createDbClient(c.env.DB);
-  const { limit = 20, offset = 0, sort = 'stars', order = 'desc' } = c.req.query();
+  const {
+    limit = 20,
+    offset = 0,
+    sort = 'stars',
+    order = 'desc',
+  } = c.req.query();
 
   const limitNum = Math.min(parseInt(limit as string) || 20, 100);
   const offsetNum = parseInt(offset as string) || 0;
@@ -26,17 +36,21 @@ pluginsRouter.get('/', async (c) => {
   const total = totalResult[0]?.count || 0;
 
   // Get plugins with sorting
-  const orderColumn = sort === 'downloads' ? plugins.downloads :
-                      sort === 'created' ? plugins.createdAt :
-                      sort === 'updated' ? plugins.updatedAt :
-                      plugins.stars;
+  const orderColumn =
+    sort === 'downloads'
+      ? plugins.downloads
+      : sort === 'created'
+        ? plugins.createdAt
+        : sort === 'updated'
+          ? plugins.updatedAt
+          : plugins.stars;
 
   const orderFn = order === 'asc' ? asc : desc;
 
   const results = await db.query.plugins.findMany({
     limit: limitNum,
     offset: offsetNum,
-    orderBy: [orderFn(orderColumn)]
+    orderBy: [orderFn(orderColumn)],
   });
 
   return paginatedResponse(
@@ -55,7 +69,7 @@ pluginsRouter.get('/featured', async (c) => {
   // TODO: Add featured flag to database
   const results = await db.query.plugins.findMany({
     limit,
-    orderBy: [desc(plugins.stars)]
+    orderBy: [desc(plugins.stars)],
   });
 
   return successResponse(c, results);
@@ -70,7 +84,7 @@ pluginsRouter.get('/trending', async (c) => {
   // TODO: Calculate trending based on recent download stats
   const results = await db.query.plugins.findMany({
     limit,
-    orderBy: [desc(plugins.downloads), desc(plugins.stars)]
+    orderBy: [desc(plugins.downloads), desc(plugins.stars)],
   });
 
   return successResponse(c, results);
@@ -86,7 +100,7 @@ pluginsRouter.get('/search', async (c) => {
     sort = 'stars',
     order = 'desc',
     limit = '20',
-    offset = '0'
+    offset = '0',
   } = c.req.query();
 
   const limitNum = Math.min(parseInt(limit) || 20, 100);
@@ -97,10 +111,7 @@ pluginsRouter.get('/search', async (c) => {
 
   if (q) {
     conditions.push(
-      or(
-        like(plugins.name, `%${q}%`),
-        like(plugins.description, `%${q}%`)
-      )
+      or(like(plugins.name, `%${q}%`), like(plugins.description, `%${q}%`))
     );
   }
 
@@ -122,10 +133,14 @@ pluginsRouter.get('/search', async (c) => {
   const total = totalResult[0]?.count || 0;
 
   // Get results with sorting
-  const orderColumn = sort === 'downloads' ? plugins.downloads :
-                      sort === 'created' ? plugins.createdAt :
-                      sort === 'updated' ? plugins.updatedAt :
-                      plugins.stars;
+  const orderColumn =
+    sort === 'downloads'
+      ? plugins.downloads
+      : sort === 'created'
+        ? plugins.createdAt
+        : sort === 'updated'
+          ? plugins.updatedAt
+          : plugins.stars;
 
   const orderFn = order === 'asc' ? asc : desc;
 
@@ -159,9 +174,9 @@ pluginsRouter.get('/:id', async (c) => {
     with: {
       versions: {
         orderBy: [desc(pluginVersions.publishedAt)],
-        limit: 10
-      }
-    }
+        limit: 10,
+      },
+    },
   });
 
   if (!plugin) {
@@ -171,21 +186,21 @@ pluginsRouter.get('/:id', async (c) => {
   // Get related components
   const [skillsList, agentsList, commandsList] = await Promise.all([
     db.query.skills.findMany({
-      where: eq(skills.pluginId, pluginId)
+      where: eq(skills.pluginId, pluginId),
     }),
     db.query.agents.findMany({
-      where: eq(agents.pluginId, pluginId)
+      where: eq(agents.pluginId, pluginId),
     }),
     db.query.commands.findMany({
-      where: eq(commands.pluginId, pluginId)
-    })
+      where: eq(commands.pluginId, pluginId),
+    }),
   ]);
 
   return successResponse(c, {
     ...plugin,
     skills: skillsList,
     agents: agentsList,
-    commands: commandsList
+    commands: commandsList,
   });
 });
 
@@ -196,7 +211,7 @@ pluginsRouter.get('/:id/versions', async (c) => {
 
   // Verify plugin exists
   const plugin = await db.query.plugins.findFirst({
-    where: eq(plugins.id, pluginId)
+    where: eq(plugins.id, pluginId),
   });
 
   if (!plugin) {
@@ -205,7 +220,7 @@ pluginsRouter.get('/:id/versions', async (c) => {
 
   const versions = await db.query.pluginVersions.findMany({
     where: eq(pluginVersions.pluginId, pluginId),
-    orderBy: [desc(pluginVersions.publishedAt)]
+    orderBy: [desc(pluginVersions.publishedAt)],
   });
 
   return successResponse(c, versions);
@@ -222,8 +237,8 @@ pluginsRouter.get('/:id/stats', async (c) => {
       id: true,
       name: true,
       downloads: true,
-      stars: true
-    }
+      stars: true,
+    },
   });
 
   if (!plugin) {
@@ -235,7 +250,7 @@ pluginsRouter.get('/:id/stats', async (c) => {
     pluginId: plugin.id,
     name: plugin.name,
     downloads: plugin.downloads,
-    stars: plugin.stars
+    stars: plugin.stars,
   });
 });
 
@@ -245,7 +260,7 @@ pluginsRouter.post('/:id/download', async (c) => {
   const pluginId = c.req.param('id');
 
   const plugin = await db.query.plugins.findFirst({
-    where: eq(plugins.id, pluginId)
+    where: eq(plugins.id, pluginId),
   });
 
   if (!plugin) {
@@ -257,7 +272,7 @@ pluginsRouter.post('/:id/download', async (c) => {
     .update(plugins)
     .set({
       downloads: sql`${plugins.downloads} + 1`,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     })
     .where(eq(plugins.id, pluginId));
 
@@ -286,7 +301,6 @@ pluginsRouter.get('/:id/readme', async (c) => {
     // For now, return 404
     c.header('X-Cache', 'MISS');
     throw new NotFoundError('README not found in cache');
-
   } catch (err) {
     if (err instanceof NotFoundError) {
       throw err;

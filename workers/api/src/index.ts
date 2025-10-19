@@ -5,14 +5,9 @@ import pluginsRouter from './routes/plugins';
 import componentsRouter from './routes/components';
 import discoveryRouter from './routes/discovery';
 import statsRouter from './routes/stats';
+import type { worker as Worker } from '../alchemy.run';
 
-type Bindings = {
-  DB: D1Database;
-  CACHE: R2Bucket;
-  ENVIRONMENT?: string;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<{ Bindings: typeof Worker.Env }>();
 
 // Apply global middleware
 app.use('*', corsMiddleware);
@@ -25,7 +20,7 @@ app.get('/health', (c) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: c.env.ENVIRONMENT || 'development',
-    version: '1.0.0'
+    version: '1.0.0',
   });
 });
 
@@ -40,7 +35,7 @@ app.notFound((c) => {
   return c.json(
     {
       success: false,
-      error: 'Endpoint not found'
+      error: 'Endpoint not found',
     },
     404
   );
@@ -52,7 +47,7 @@ app.onError((err, c) => {
   return c.json(
     {
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     },
     500
   );
