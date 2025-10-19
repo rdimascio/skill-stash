@@ -395,7 +395,7 @@ npm publish --access public
 
 ### Support Channels
 - GitHub Issues: Primary support channel
-- Email: hello@skillstash.com
+- Email: hello@skillstack.dev
 - Twitter: @skillstash
 
 ---

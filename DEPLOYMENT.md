@@ -80,6 +80,38 @@ alchemy configure
    - Account > R2 > Edit
 5. Copy the token (save it securely!)
 
+### Step 1.1b: Configure GitHub Secrets for CI/CD
+
+For automated deployments via GitHub Actions, configure these secrets in your repository:
+
+**Navigate to**: Repository Settings → Secrets and variables → Actions → New repository secret
+
+**Required Secrets**:
+```bash
+# Cloudflare Authentication
+CLOUDFLARE_API_TOKEN=your-cloudflare-api-token-here
+CLOUDFLARE_EMAIL=your-cloudflare-account-email-here
+
+# Alchemy State Management
+ALCHEMY_PASSWORD=your-encryption-password-here
+ALCHEMY_STATE_TOKEN=your-state-management-token-here
+
+# GitHub Token (for indexer and PR comments)
+GH_TOKEN=your-github-personal-access-token-here
+```
+
+**Important Notes**:
+- `ALCHEMY_PASSWORD`: Choose a strong password for encrypting Alchemy state
+- `ALCHEMY_STATE_TOKEN`: Generate a secure random token (e.g., `openssl rand -hex 32`)
+- `GH_TOKEN`: Create with `repo` and `pull_requests` permissions for PR preview comments
+- `CLOUDFLARE_EMAIL`: Use the email associated with your Cloudflare account
+
+**PR Preview Deployments**:
+The CI/CD pipeline now supports automatic preview deployments for pull requests:
+- Opening/updating a PR → Creates preview environment with stage `pr-<number>`
+- Closing a PR → Automatically destroys the preview environment
+- Preview URLs are posted as comments on the PR automatically
+
 ### Step 1.2: Authenticate with Cloudflare
 ```bash
 # Login to Cloudflare via Alchemy
@@ -302,12 +334,12 @@ curl -I https://skillstash.vercel.app
 
 ### 4.6 Configure Custom Domain (Optional)
 
-If you have a custom domain (e.g., skillstash.com):
+If you have a custom domain (e.g., skillstack.dev):
 
 **Via Vercel Dashboard:**
 1. Go to Project Settings → Domains
-2. Add your domain (skillstash.com)
-3. Add www subdomain (www.skillstash.com)
+2. Add your domain (skillstack.dev)
+3. Add www subdomain (www.skillstack.dev)
 4. Follow DNS configuration instructions
 5. Wait for DNS propagation (can take up to 24 hours)
 
@@ -577,7 +609,7 @@ wrangler d1 execute skillstash-registry --command="SELECT COUNT(*) FROM plugins"
 
 ```bash
 # The CLI uses the API URL from:
-# Default: https://api.skillstash.com (production)
+# Default: https://api.skillstack.dev (production)
 # Or set via: SKILLSTASH_API_URL environment variable
 
 # Set custom API URL:
@@ -653,7 +685,7 @@ wrangler rollback
 
 ## Custom Domain Setup (Advanced)
 
-### For skillstash.com
+### For skillstack.dev
 
 **1. Configure in Vercel:**
 - Add domain in Vercel dashboard
@@ -673,7 +705,7 @@ Value: cname.vercel-dns.com
 
 **3. Configure Subdomains (Optional):**
 ```
-# api.skillstash.com → Cloudflare Worker
+# api.skillstack.dev → Cloudflare Worker
 Type: CNAME
 Name: api
 Value: skillstash-api.<your-subdomain>.workers.dev
@@ -682,8 +714,8 @@ Value: skillstash-api.<your-subdomain>.workers.dev
 **4. Wait for DNS Propagation:**
 ```bash
 # Check DNS propagation
-dig skillstash.com
-dig www.skillstash.com
+dig skillstack.dev
+dig www.skillstack.dev
 
 # Should show your Vercel CNAME
 ```
